@@ -2,7 +2,7 @@ import { Router } from 'express';
 import {
     addItemToShoppingList,
     removeItemFromShoppingList
-} from '../controllers/itemController';
+} from '../controller/itemController';
 
 const router = Router();
 

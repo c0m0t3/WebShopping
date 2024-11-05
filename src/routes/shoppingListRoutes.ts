@@ -6,7 +6,7 @@ import {
     deleteShoppingList,
     searchShoppingLists,
     getShoppingListsByItem
-} from '../controllers/shoppingListController';
+} from '../controller/shoppingListController';
 
 const router = Router();
 
