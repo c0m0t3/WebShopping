@@ -1,6 +1,7 @@
 import type { Database } from '..';
 import { CreateItem } from '../../validation/validation';
 import { items } from '../schema/items.schema';
+import { eq } from 'drizzle-orm';
 
 export class ItemsRepository {
   constructor(private readonly database: Database) {}
@@ -18,6 +19,14 @@ export class ItemsRepository {
       description: items.description,
     });
   }
+
+  async deleteItemFromDatabase(id: string) {
+    return this.database
+      .delete(items)
+      .where(eq(items.id, id));
+  }
+
+
 
 
 
