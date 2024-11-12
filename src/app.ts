@@ -1,5 +1,5 @@
-import express, { Application} from 'express';
-import { globalErrorHandler} from './utils/global-error';
+import express, { Application } from 'express';
+import { globalErrorHandler } from './utils/global-error';
 import { Routes } from './routes/routes';
 import helmet from 'helmet';
 import { prepareAuthentication } from './middleware/auth.middleware'; //todo prüfen
@@ -12,6 +12,10 @@ export class App {
     this._registerMiddlewares();
     this._registerRoutes();
     this._registerErrorHandlers();
+  }
+
+  public listen(port: number, callback: () => void) {
+    return this.app.listen(port, callback);
   }
 
   private _registerMiddlewares() {
@@ -32,9 +36,4 @@ export class App {
   private _registerErrorHandlers() {
     this.app.use(globalErrorHandler);
   }
-
-  public listen(port: number, callback: () => void) {
-    return this.app.listen(port, callback);
-  }
-
 }

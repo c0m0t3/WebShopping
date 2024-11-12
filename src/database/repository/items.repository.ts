@@ -21,13 +21,10 @@ export class ItemsRepository {
   }
 
   async deleteItemFromDatabase(id: string) {
-    return this.database
-      .delete(items)
-      .where(eq(items.id, id));
+    return this.database.delete(items).where(eq(items.id, id));
   }
 
-
-
-
-
+  async updateItem(id: string, data: CreateItem) {
+    return this.database.update(items).set(data).where(eq(items.id, id));
+  }
 }
