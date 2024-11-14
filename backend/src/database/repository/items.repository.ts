@@ -12,6 +12,10 @@ export class ItemsRepository {
     });
   }
 
+  async getItems() {
+    return this.database.query.items.findMany();
+  }
+
   async getItemsByNamesOrIds(names: string[], ids: string[]) {
     return this.database.query.items.findMany({
       where: (items, { and, or, inArray }) =>

@@ -2,7 +2,7 @@ import type { Database } from '..';
 import { CreateItem } from '../../validation/validation';
 import { shoppingLists } from '../schema/shoppingLists.schema';
 import { shoppingListItems } from '../schema/shoppingListItems.schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 export class ShoppingListsRepository {
   constructor(private readonly database: Database) {}
@@ -49,14 +49,26 @@ export class ShoppingListsRepository {
 
   async associateItemsWithShoppingList(
     shoppingListId: string,
-    itemIds: string[],
+    items: { itemId: string; quantity?: number }[],
   ) {
     return this.database.insert(shoppingListItems).values(
-      itemIds.map((itemId) => ({
+      items.map((item) => ({
         shoppingListId,
-        itemId,
-        quantity: 1,
+        itemId: item.itemId,
+        quantity: item.quantity ?? 1, // Default quantity to 1 if not provided
       })),
     );
   }
+  async removeItemFromShoppingList(shoppingListId: string, itemId: string) {
+    return this.database
+      .delete(shoppingListItems)
+      .where(and(eq(shoppingListItems.shoppingListId, shoppingListId), eq(shoppingListItems.itemId, itemId)));
+  }
+
+  async getShoppingListItems(shoppingListId: string) {
+    return this.database.query.shoppingListItems.findMany({
+      where: (items, { eq }) => eq(items.shoppingListId, shoppingListId),
+    });
+  }
+
 }

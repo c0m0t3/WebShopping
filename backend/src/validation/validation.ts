@@ -34,6 +34,7 @@ export const createShoppingListZodSchema = createInsertSchema(shoppingLists, {
             id: z.string().uuid().optional(),
             name: z.string().min(1).optional(),
             description: z.string().min(1).optional(),
+            quantity: z.number().int().positive().optional(),
           })
           .refine((data) => data.id ?? data.name, {
             message: 'At least one of id or name must be provided',
@@ -45,6 +46,15 @@ export const createShoppingListZodSchema = createInsertSchema(shoppingLists, {
 export const createItemZodSchema = createInsertSchema(items, {
   name: z.string().min(1),
   description: z.string().min(1).optional(),
+});
+
+export const associateItemsWithShoppingListSchema = z.object({
+  items: z.array(
+    z.object({
+      itemId: z.string().uuid(),
+      quantity: z.number().int().positive().optional(),
+    })
+  ),
 });
 
 export const loginZodSchema = z.object({

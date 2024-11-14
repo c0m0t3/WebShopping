@@ -3,6 +3,9 @@ import { AuthController } from '../controller/auth.controller';
 import { HealthController } from '../controller/health.controller';
 import { ItemsController } from '../controller/items.controller';
 import { ShoppingListsController } from '../controller/shoppingLists.controller';
+import { associateItemsWithShoppingListSchema } from '../validation/validation';
+import * as z from 'zod';
+import { globalErrorHandler } from '../utils/global-error';
 
 //todo hier kommen die Controller der Klassen hin
 
@@ -41,6 +44,10 @@ export class Routes {
     this.router.get(
       '/items/:id',
       this.itemsController.getItemById.bind(this.itemsController),
+    );
+    this.router.get(
+      '/items',
+      this.itemsController.getItems.bind(this.itemsController),
     );
     this.router.post(
       '/items',
@@ -82,6 +89,36 @@ export class Routes {
     this.router.put(
       '/shoppingLists/:id',
       this.ShoppingListsController.updateShoppingList.bind(
+        this.ShoppingListsController,
+      ),
+    );
+  // ShoppingLists items routes
+    this.router.post(
+      '/shoppingLists/:id/items', //TODO es muss noch geprüft werden ob die Items existieren
+      (req, res, next) => {
+        try {
+          associateItemsWithShoppingListSchema.parse(req.body);
+          next();
+        } catch (e) {
+          next(e); //
+        }
+      },
+      this.ShoppingListsController.associateItemsWithShoppingList.bind(
+        this.ShoppingListsController,
+      ),
+    );
+    this.router.use(globalErrorHandler);
+
+    this.router.delete(
+      '/shoppingLists/:id/items/:itemId',
+      this.ShoppingListsController.removeItemFromShoppingList.bind(
+        this.ShoppingListsController,
+      ),
+    );
+
+    this.router.get(
+      '/shoppingLists/:id/items',
+      this.ShoppingListsController.getShoppingListItems.bind(
         this.ShoppingListsController,
       ),
     );

@@ -31,17 +31,21 @@ export class ShoppingListsController {
     const createdShoppingList =
       await this.shoppingListsRepository.createShoppingList(validatedData);
 
-    const itemsWithName = [];
-    const itemsWithId = [];
+    const itemsWithName: { name: string; description?: string; quantity?: number }[] = [];
+    const itemsWithId: { id: string; quantity?: number }[] = [];
 
     if (validatedData.items) {
       for (const item of validatedData.items) {
         if (item.id) {
-          itemsWithId.push(item.id);
+          itemsWithId.push({
+            id: item.id,
+            quantity: item.quantity,
+          });
         } else if (item.name) {
           itemsWithName.push({
             name: item.name,
             description: item.description,
+            quantity: item.quantity,
           });
         }
       }
@@ -54,11 +58,14 @@ export class ShoppingListsController {
     if (itemsWithId.length > 0) {
       const items = await this.ItemsRepository.getItemsByNamesOrIds(
         itemsWithName.map((item) => item.name),
-        itemsWithId,
+        itemsWithId.map((item) => item.id),
       );
       await this.shoppingListsRepository.associateItemsWithShoppingList(
         createdShoppingList.id,
-        items.map((item) => item.id),
+        items.map((item, index) => ({
+          itemId: item.id,
+          quantity: itemsWithId[index].quantity, // Ensure quantity is included if available
+        })),
       );
     }
 
@@ -77,5 +84,24 @@ export class ShoppingListsController {
         req.body,
       );
     res.status(200).send(updatedShoppingList);
+  }
+
+  async associateItemsWithShoppingList(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    const items = req.body.items; // Expecting an array of objects with itemId and optional quantity
+    await this.shoppingListsRepository.associateItemsWithShoppingList(id, items);
+    res.status(201).send();
+  }
+
+  async removeItemFromShoppingList(req: Request, res: Response): Promise<void> {
+    const { id, itemId } = req.params;
+    await this.shoppingListsRepository.removeItemFromShoppingList(id, itemId);
+    res.status(204).send();
+  }
+
+  async getShoppingListItems(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    const items = await this.shoppingListsRepository.getShoppingListItems(id);
+    res.status(200).send(items);
   }
 }
