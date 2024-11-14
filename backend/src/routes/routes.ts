@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { AuthController } from '../controller/auth.controller';
 import { HealthController } from '../controller/health.controller';
 import { ItemsController } from '../controller/items.controller';
+import { ShoppingListsController } from '../controller/shoppingLists.controller';
 
 //todo hier kommen die Controller der Klassen hin
 
@@ -12,6 +13,7 @@ export class Routes {
     private readonly authController: AuthController, //todo hier auch die anderen Controller hinzufügen
     private readonly healthController: HealthController,
     private readonly itemsController: ItemsController,
+    private readonly ShoppingListsController: ShoppingListsController,
   ) {
     this.router = Router();
     this.initializeRoutes();
@@ -42,7 +44,7 @@ export class Routes {
     );
     this.router.post(
       '/items',
-      this.itemsController.createItem.bind(this.itemsController),
+      this.itemsController.createItems.bind(this.itemsController),
     );
     this.router.delete(
       '/items/:id',
@@ -51,6 +53,37 @@ export class Routes {
     this.router.put(
       '/items/:id',
       this.itemsController.updateItem.bind(this.itemsController),
+    );
+    // ShoppingLists routes
+    this.router.get(
+      '/shoppingLists/:id',
+      this.ShoppingListsController.getShoppingListById.bind(
+        this.ShoppingListsController,
+      ),
+    );
+    this.router.get(
+      '/shoppingLists',
+      this.ShoppingListsController.getShoppingLists.bind(
+        this.ShoppingListsController,
+      ),
+    )
+    this.router.post(
+      '/shoppingLists',
+      this.ShoppingListsController.createShoppingList.bind(
+        this.ShoppingListsController,
+      ),
+    );
+    this.router.delete(
+      '/shoppingLists/:id',
+      this.ShoppingListsController.deleteShoppingList.bind(
+        this.ShoppingListsController,
+      ),
+    );
+    this.router.put(
+      '/shoppingLists/:id',
+      this.ShoppingListsController.updateShoppingList.bind(
+        this.ShoppingListsController,
+      ),
     );
   }
 }

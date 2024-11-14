@@ -13,8 +13,8 @@ export class ItemsController {
     res.status(200).send(item);
   }
 
-  async createItem(req: Request, res: Response): Promise<void> {
-    const createdItem = await this.itemRepository.createItem(req.body);
+  async createItems(req: Request, res: Response): Promise<void> {
+    const createdItem = await this.itemRepository.createItems(req.body);
     res.status(201).send(createdItem);
   }
 

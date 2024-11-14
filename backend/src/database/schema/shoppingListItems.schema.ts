@@ -1,4 +1,4 @@
-import { pgTable, varchar, integer } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgTable, varchar } from 'drizzle-orm/pg-core';
 import { commonSchema } from './common.schema';
 
 export const shoppingListItems = pgTable('shoppingListItems', {
@@ -6,4 +6,5 @@ export const shoppingListItems = pgTable('shoppingListItems', {
   shoppingListId: varchar({ length: 256 }).notNull(),
   itemId: varchar({ length: 256 }).notNull(),
   quantity: integer().notNull(),
+  is_purchased: boolean().default(false),
 });

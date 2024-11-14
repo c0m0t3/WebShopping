@@ -12,7 +12,14 @@ export class ItemsRepository {
     });
   }
 
-  async createItem(data: CreateItem) {
+  async getItemsByNamesOrIds(names: string[], ids: string[]) {
+    return this.database.query.items.findMany({
+      where: (items, { and, or, inArray }) =>
+        and(or(inArray(items.id, ids), inArray(items.name, names))),
+    });
+  }
+
+  async createItems(data: { name: string; description?: string }[]) {
     return this.database.insert(items).values(data).returning({
       id: items.id,
       name: items.name,

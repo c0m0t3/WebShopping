@@ -10,6 +10,8 @@ import { HealthController } from './controller/health.controller';
 import { Routes } from './routes/routes';
 import { ItemsRepository } from './database/repository/items.repository';
 import { ItemsController } from './controller/items.controller';
+import { ShoppingListsRepository } from './database/repository/shoppingLists.repository';
+import { ShoppingListsController } from './controller/shoppingLists.controller';
 
 export const DI = {} as {
   app: App;
@@ -19,12 +21,14 @@ export const DI = {} as {
   repositories: {
     user: UserRepository;
     items: ItemsRepository;
+    shoppingLists: ShoppingListsRepository;
     //todo hier repository
   };
   controllers: {
     auth: AuthController;
     health: HealthController;
     items: ItemsController;
+    shoppingLists: ShoppingListsController;
     //todo hier controller
   };
   utils: {
@@ -50,6 +54,7 @@ export function initializeDependencyInjection(): void {
   DI.repositories = {
     user: new UserRepository(DI.db),
     items: new ItemsRepository(DI.db),
+    shoppingLists: new ShoppingListsRepository(DI.db),
     //todo hier repository
   };
 
@@ -61,6 +66,7 @@ export function initializeDependencyInjection(): void {
     ),
     health: new HealthController(), //todo hier auch die anderen Controller hinzufügen
     items: new ItemsController(DI.repositories.items),
+    shoppingLists: new ShoppingListsController(DI.repositories.shoppingLists, DI.repositories.items),
   };
 
   // Initialize routes
@@ -68,6 +74,7 @@ export function initializeDependencyInjection(): void {
     DI.controllers.auth,
     DI.controllers.health,
     DI.controllers.items,
+    DI.controllers.shoppingLists,
   );
 
   // Initialize app
