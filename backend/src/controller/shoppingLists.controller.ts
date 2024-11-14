@@ -104,4 +104,15 @@ export class ShoppingListsController {
     const items = await this.shoppingListsRepository.getShoppingListItems(id);
     res.status(200).send(items);
   }
+
+  async searchShoppingLists(req: Request, res: Response): Promise<void> {
+    const { query } = req.query;
+    if (typeof query !== 'string') {
+      res.status(400).send({ error: 'Query parameter is required and must be a string' });
+      return;
+    }
+
+    const results = await this.shoppingListsRepository.searchShoppingLists(query);
+    res.send(results);
+  }
 }

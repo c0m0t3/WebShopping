@@ -122,5 +122,13 @@ export class Routes {
         this.ShoppingListsController,
       ),
     );
+
+    // Special Routes
+    this.router.get(
+      '/shoppingLists/search/search',
+      this.ShoppingListsController.searchShoppingLists.bind(
+        this.ShoppingListsController,
+      ),
+    )
   }
 }

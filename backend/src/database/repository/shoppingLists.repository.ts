@@ -71,4 +71,11 @@ export class ShoppingListsRepository {
     });
   }
 
+  async searchShoppingLists(query: string) {
+    return this.database.query.shoppingLists.findMany({
+      where: (shoppingLists, { or, like }) =>
+        or(like(shoppingLists.name, `%${query}%`), like(shoppingLists.description, `%${query}%`)),
+    });
+  }
+
 }
