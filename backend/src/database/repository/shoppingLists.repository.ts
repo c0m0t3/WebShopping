@@ -78,4 +78,10 @@ export class ShoppingListsRepository {
     });
   }
 
+  async searchShoppingListsByItem (itemId: string) {
+    return this.database.query.shoppingListItems.findMany({
+      where: (items, { eq }) => eq(items.itemId, itemId),
+    });
+  }
+
 }

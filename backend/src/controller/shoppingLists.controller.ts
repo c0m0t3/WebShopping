@@ -110,9 +110,19 @@ export class ShoppingListsController {
     if (typeof query !== 'string') {
       res.status(400).send({ error: 'Query parameter is required and must be a string' });
       return;
+    } else if(query.trim() === '') { // Check if query is empty and return an empty array
+      res.status(200).send([]);
+      return;
     }
 
     const results = await this.shoppingListsRepository.searchShoppingLists(query);
+    res.send(results);
+  }
+
+  async searchShoppingListsByItem(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+    console.log("Search 2" + id);
+    const results = await this.shoppingListsRepository.searchShoppingListsByItem(id);
     res.send(results);
   }
 }

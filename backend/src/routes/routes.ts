@@ -130,5 +130,11 @@ export class Routes {
         this.ShoppingListsController,
       ),
     )
+    this.router.get(
+      '/shoppingLists/search/:id',
+      this.ShoppingListsController.searchShoppingListsByItem.bind(
+        this.ShoppingListsController,
+      ),
+    )
   }
 }
