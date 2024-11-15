@@ -123,6 +123,13 @@ export class Routes {
       ),
     );
 
+    this.router.put(
+      '/shoppingLists/:id/items/:itemId',
+      this.ShoppingListsController.updateShoppingListItems.bind(
+        this.ShoppingListsController,
+      ),
+    )
+
     // Special Routes
     this.router.get(
       '/shoppingLists/search/search',

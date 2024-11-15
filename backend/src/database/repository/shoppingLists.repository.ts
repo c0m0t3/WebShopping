@@ -65,6 +65,16 @@ export class ShoppingListsRepository {
       .where(and(eq(shoppingListItems.shoppingListId, shoppingListId), eq(shoppingListItems.itemId, itemId)));
   }
 
+  async updateShoppingListItems(shoppingListId: string, itemId: string, quantity: number, is_purchased: boolean) {
+    return this.database
+      .update(shoppingListItems)
+      .set({
+        quantity,
+        is_purchased,
+      })
+      .where(and(eq(shoppingListItems.shoppingListId, shoppingListId), eq(shoppingListItems.itemId, itemId)));
+  }
+
   async getShoppingListItems(shoppingListId: string) {
     return this.database.query.shoppingListItems.findMany({
       where: (items, { eq }) => eq(items.shoppingListId, shoppingListId),

@@ -99,6 +99,13 @@ export class ShoppingListsController {
     res.status(204).send();
   }
 
+  async updateShoppingListItems(req: Request, res: Response): Promise<void> {
+    const { id, itemId } = req.params;
+    const { quantity, is_purchased } = req.body;
+    await this.shoppingListsRepository.updateShoppingListItems(id, itemId, quantity, is_purchased);
+    res.status(200).send();
+  }
+
   async getShoppingListItems(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const items = await this.shoppingListsRepository.getShoppingListItems(id);
