@@ -43,6 +43,11 @@ export const createShoppingListZodSchema = createInsertSchema(shoppingLists, {
       .optional(),
   });
 
+export const updateShoppingListZodSchema = z.object({
+  name: z.string().min(1),
+  description: z.string().optional(),
+}).strict();
+
 export const createItemZodSchema = createInsertSchema(items, {
   name: z.string().min(1),
   description: z.string().min(1).optional(),
