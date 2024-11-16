@@ -28,7 +28,11 @@ export class ItemsController {
   }
 
   async deleteItem(req: Request, res: Response): Promise<void> {
-    await this.itemRepository.deleteItemFromDatabase(req.params.id);
+    const result = await this.itemRepository.deleteItemFromDatabase(req.params.id);
+    if (!result) {
+      res.status(404).send('Item not found');
+      return;
+    }
     res.status(204).send();
   }
 
@@ -37,6 +41,10 @@ export class ItemsController {
       req.params.id,
       req.body,
     );
+    if(!updatedItem) {
+      res.status(404).send('Item not found');
+      return;
+    }
     res.status(200).send(updatedItem);
   }
 }

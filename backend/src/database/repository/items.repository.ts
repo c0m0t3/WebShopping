@@ -6,6 +6,13 @@ import { eq } from 'drizzle-orm';
 export class ItemsRepository {
   constructor(private readonly database: Database) {}
 
+  async checkItemsExist(names: string[]): Promise<string[]> {
+    const existingItems = await this.database.query.items.findMany({
+      where: (items, { inArray }) => inArray(items.name, names),
+    });
+    return existingItems.map(item => item.name);
+  }
+
   async getItemById(id: string) {
     return this.database.query.items.findFirst({
       where: (items, { eq }) => eq(items.id, id),
@@ -24,17 +31,10 @@ export class ItemsRepository {
   }
 
   async createItems(data: { name: string; description?: string }[]) {
-    const itemsToInsert = [];
+    const itemNames = data.map(item => item.name);
+    const existingItemNames = await this.checkItemsExist(itemNames);
 
-    for (const item of data) {
-      const existingItem = await this.database.query.items.findFirst({
-        where: (items, { eq }) => eq(items.name, item.name),
-      });
-
-      if (!existingItem) {
-        itemsToInsert.push(item);
-      }
-    }
+    const itemsToInsert = data.filter(item => !existingItemNames.includes(item.name));
 
     if (itemsToInsert.length === 0) {
       return [];
@@ -48,10 +48,26 @@ export class ItemsRepository {
   }
 
   async deleteItemFromDatabase(id: string) {
+    const existingItem = await this.getItemById(id);
+
+    if (!existingItem) {
+      return null;
+    }
+
     return this.database.delete(items).where(eq(items.id, id));
   }
 
   async updateItem(id: string, data: CreateItem) {
-    return this.database.update(items).set(data).where(eq(items.id, id));
+    const existingItem = await this.getItemById(id);
+
+    if (!existingItem) {
+      return null;
+    }
+
+    return this.database.update(items).set(data).where(eq(items.id, id)).returning({
+      id: items.id,
+      name: items.name,
+      description: items.description,
+    });
   }
 }
