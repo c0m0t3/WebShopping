@@ -19,8 +19,12 @@ export class ItemsController {
   }
 
   async createItems(req: Request, res: Response): Promise<void> {
-    const createdItem = await this.itemRepository.createItems(req.body);
-    res.status(201).send(createdItem);
+    const createdItems = await this.itemRepository.createItems(req.body);
+    if (createdItems.length === 0) {
+      res.status(409).send('No new items were created because they already exist.');
+    } else {
+      res.status(201).send(createdItems);
+    }
   }
 
   async deleteItem(req: Request, res: Response): Promise<void> {

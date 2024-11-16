@@ -24,7 +24,23 @@ export class ItemsRepository {
   }
 
   async createItems(data: { name: string; description?: string }[]) {
-    return this.database.insert(items).values(data).returning({
+    const itemsToInsert = [];
+
+    for (const item of data) {
+      const existingItem = await this.database.query.items.findFirst({
+        where: (items, { eq }) => eq(items.name, item.name),
+      });
+
+      if (!existingItem) {
+        itemsToInsert.push(item);
+      }
+    }
+
+    if (itemsToInsert.length === 0) {
+      return [];
+    }
+
+    return this.database.insert(items).values(itemsToInsert).returning({
       id: items.id,
       name: items.name,
       description: items.description,
