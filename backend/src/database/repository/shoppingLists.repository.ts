@@ -52,14 +52,28 @@ export class ShoppingListsRepository {
     shoppingListId: string,
     items: { itemId: string; quantity?: number }[],
   ) {
-    return this.database.insert(shoppingListItems).values(
-      items.map((item) => ({
-        shoppingListId,
-        itemId: item.itemId,
-        quantity: item.quantity ?? 1, // Default quantity to 1 if not provided
-      })),
-    );
+    for (const item of items) {
+      const existingItem = await this.database.query.shoppingListItems.findFirst({
+        where: (shoppingListItems, { and, eq }) =>
+          and(eq(shoppingListItems.shoppingListId, shoppingListId), eq(shoppingListItems.itemId, item.itemId)),
+      });
+
+      if (existingItem) {
+        await this.database.update(shoppingListItems)
+          .set({
+            quantity: (existingItem.quantity ?? 1) + (item.quantity ?? 1),
+          })
+          .where(and(eq(shoppingListItems.shoppingListId, shoppingListId), eq(shoppingListItems.itemId, item.itemId)));
+      } else {
+        await this.database.insert(shoppingListItems).values({
+          shoppingListId,
+          itemId: item.itemId,
+          quantity: item.quantity ?? 1,
+        });
+      }
+    }
   }
+
   async removeItemFromShoppingList(shoppingListId: string, itemId: string) {
     return this.database
       .delete(shoppingListItems)

@@ -7,7 +7,7 @@ import { ItemsRepository } from '../database/repository/items.repository';
 export class ShoppingListsController {
   constructor(
     private readonly shoppingListsRepository: ShoppingListsRepository,
-    private readonly ItemsRepository: ItemsRepository,
+    private readonly itemsRepository: ItemsRepository,
   ) {}
 
   async getShoppingListById(req: Request, res: Response): Promise<void> {
@@ -54,11 +54,11 @@ export class ShoppingListsController {
     }
 
     if (itemsWithName.length > 0) {
-      await this.ItemsRepository.createItems(itemsWithName);
+      await this.itemsRepository.createItems(itemsWithName);
     }
 
     if (itemsWithId.length > 0) {
-      const items = await this.ItemsRepository.getItemsByNamesOrIds(
+      const items = await this.itemsRepository.getItemsByNamesOrIds(
         itemsWithName.map((item) => item.name),
         itemsWithId.map((item) => item.id),
       );
@@ -93,10 +93,24 @@ export class ShoppingListsController {
   }
 
   async associateItemsWithShoppingList(req: Request, res: Response): Promise<void> {
-    const { id } = req.params;
-    const items = req.body.items; // Expecting an array of objects with itemId and optional quantity
-    await this.shoppingListsRepository.associateItemsWithShoppingList(id, items);
-    res.status(201).send();
+    const { items } = req.body;
+    const itemIds = items.map((item: { itemId: string }) => item.itemId);
+
+    for (const id of itemIds) {
+      if (!id) {
+        res.status(400).send('itemId is required');
+        return;
+      }
+
+      const exists = await this.itemsRepository.getItemById(id);
+      if (!exists) {
+        res.status(404).send(`Item with id ${id} does not exist`);
+        return;
+      }
+    }
+
+    await this.shoppingListsRepository.associateItemsWithShoppingList(req.params.id, items);
+    res.status(200).send('Items added to shopping list');
   }
 
   async removeItemFromShoppingList(req: Request, res: Response): Promise<void> {

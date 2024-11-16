@@ -101,6 +101,7 @@ export class Routes {
   // ShoppingLists items routes
     this.router.post(
       '/shoppingLists/:id/items', //TODO es muss noch geprüft werden ob die Items existieren
+      validateUUID,
       (req, res, next) => {
         try {
           associateItemsWithShoppingListSchema.parse(req.body);

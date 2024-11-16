@@ -19,6 +19,12 @@ export class ItemsRepository {
     });
   }
 
+  async getItemsById(ids: string[]) {
+    return this.database.query.items.findMany({
+      where: (items, { inArray }) => inArray(items.id, ids),
+    });
+  }
+
   async getItems() {
     return this.database.query.items.findMany();
   }
