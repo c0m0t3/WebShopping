@@ -4,7 +4,7 @@ import { HealthController } from '../controller/health.controller';
 import { ItemsController } from '../controller/items.controller';
 import { ShoppingListsController } from '../controller/shoppingLists.controller';
 import { associateItemsWithShoppingListSchema } from '../validation/validation';
-import * as z from 'zod';
+import { validateUUID } from '../middleware/validateUUID';
 import { globalErrorHandler } from '../utils/global-error';
 
 //todo hier kommen die Controller der Klassen hin
@@ -43,6 +43,7 @@ export class Routes {
     // Items routes
     this.router.get(
       '/items/:id',
+      validateUUID,
       this.itemsController.getItemById.bind(this.itemsController),
     );
     this.router.get(
@@ -55,15 +56,18 @@ export class Routes {
     );
     this.router.delete(
       '/items/:id',
+      validateUUID,
       this.itemsController.deleteItem.bind(this.itemsController),
     );
     this.router.put(
       '/items/:id',
+      validateUUID,
       this.itemsController.updateItem.bind(this.itemsController),
     );
     // ShoppingLists routes
     this.router.get(
       '/shoppingLists/:id',
+      validateUUID,
       this.ShoppingListsController.getShoppingListById.bind(
         this.ShoppingListsController,
       ),
@@ -82,12 +86,14 @@ export class Routes {
     );
     this.router.delete(
       '/shoppingLists/:id',
+      validateUUID,
       this.ShoppingListsController.deleteShoppingList.bind(
         this.ShoppingListsController,
       ),
     );
     this.router.put(
       '/shoppingLists/:id',
+      validateUUID,
       this.ShoppingListsController.updateShoppingList.bind(
         this.ShoppingListsController,
       ),
@@ -111,6 +117,7 @@ export class Routes {
 
     this.router.delete(
       '/shoppingLists/:id/items/:itemId',
+      validateUUID,
       this.ShoppingListsController.removeItemFromShoppingList.bind(
         this.ShoppingListsController,
       ),
@@ -118,6 +125,7 @@ export class Routes {
 
     this.router.get(
       '/shoppingLists/:id/items',
+      validateUUID,
       this.ShoppingListsController.getShoppingListItems.bind(
         this.ShoppingListsController,
       ),
@@ -125,6 +133,7 @@ export class Routes {
 
     this.router.put(
       '/shoppingLists/:id/items/:itemId',
+      validateUUID,
       this.ShoppingListsController.updateShoppingListItems.bind(
         this.ShoppingListsController,
       ),
@@ -139,6 +148,7 @@ export class Routes {
     )
     this.router.get(
       '/shoppingLists/search/:id',
+      validateUUID,
       this.ShoppingListsController.searchShoppingListsByItem.bind(
         this.ShoppingListsController,
       ),
