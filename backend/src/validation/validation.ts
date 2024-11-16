@@ -20,7 +20,7 @@ export const createUserZodSchema = createInsertSchema(user, {
 
 export const createShoppingListZodSchema = createInsertSchema(shoppingLists, {
   name: z.string().min(1),
-  description: z.string().min(1),
+  description: z.string().optional(),
 })
   .pick({
     name: true,

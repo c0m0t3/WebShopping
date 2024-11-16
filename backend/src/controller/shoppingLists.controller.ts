@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ShoppingListsRepository } from '../database/repository/shoppingLists.repository';
 import { createShoppingListZodSchema } from '../validation/validation';
+import { updateShoppingListZodSchema } from '../validation/validation';
 import { ItemsRepository } from '../database/repository/items.repository';
 
 export class ShoppingListsController {
@@ -13,8 +14,9 @@ export class ShoppingListsController {
     const shoppingList = await this.shoppingListsRepository.getShoppingListById(
       req.params.id,
     );
+    console.log(shoppingList);
     if (!shoppingList) {
-      res.status(404).send('ShoppingList not found');
+      res.status(404).send({ error: 'ShoppingList not found' });
       return;
     }
     res.status(200).send(shoppingList);
@@ -73,17 +75,21 @@ export class ShoppingListsController {
   }
 
   async deleteShoppingList(req: Request, res: Response): Promise<void> {
-    await this.shoppingListsRepository.deleteShoppingList(req.params.id);
+    const { id } = req.params;
+    const result = await this.shoppingListsRepository.deleteShoppingList(id);
+
+    if (result === 0) {
+      res.status(404).send({ error: 'ShoppingList not found' });
+      return;
+    }
+
     res.status(204).send();
   }
 
   async updateShoppingList(req: Request, res: Response): Promise<void> {
-    const updatedShoppingList =
-      await this.shoppingListsRepository.updateShoppingList(
-        req.params.id,
-        req.body,
-      );
-    res.status(200).send(updatedShoppingList);
+      const validatedData = updateShoppingListZodSchema.parse(req.body);
+      const updatedShoppingList = await this.shoppingListsRepository.updateShoppingList(req.params.id, validatedData);
+      res.status(200).send(updatedShoppingList);
   }
 
   async associateItemsWithShoppingList(req: Request, res: Response): Promise<void> {

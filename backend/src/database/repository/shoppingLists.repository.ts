@@ -33,8 +33,9 @@ export class ShoppingListsRepository {
     return createdShoppingList;
   }
 
-  async deleteShoppingList(id: string) {
-    return this.database.delete(shoppingLists).where(eq(shoppingLists.id, id));
+  async deleteShoppingList(id: string): Promise<number> {
+    const result = await this.database.delete(shoppingLists).where(eq(shoppingLists.id, id));
+    return result.rowCount ?? 0; // Provide a default value of 0 if rowCount is null
   }
 
   async updateShoppingList(id: string, data: CreateItem) {
