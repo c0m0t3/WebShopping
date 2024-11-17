@@ -274,9 +274,21 @@ describe('ShoppingListsController', () => {
   });
 
   describe('GET /shoppingLists/search/:id', () => {
+    let itemId: string;
+
+    beforeEach(async () => {
+      const items = await itemsRepository.getItems();
+      itemId = items[0].id;
+    });
+
     it('should search shopping lists by item', async () => {
-      const response = await request(app).get('/shoppingLists/search/1bcbecc6-8c96-4263-9579-1abb79b517bb');
+      const response = await request(app).get(`/shoppingLists/search/${itemId}`);
       expect(response.status).toBe(200);
+    });
+
+    it('should return 404 if the item does not exist', async () => {
+      const response = await request(app).get('/shoppingLists/search/1bcbecc6-8c96-4263-9579-1abb79b517bb');
+      expect(response.status).toBe(404);
     });
   });
 });

@@ -220,12 +220,25 @@ export class ShoppingListsController {
   }
 
   async searchShoppingListsByItem(req: Request, res: Response): Promise<void> {
-    if(!isUUID(req.params.id)) {
+    if (!isUUID(req.params.id)) {
       res.status(400).send({ error: 'Invalid UUID' });
       return;
     }
     const { id } = req.params;
+
+    // Check if the item exists
+    const itemExists = await this.itemsRepository.getItemById(id);
+    if (!itemExists) {
+      res.status(404).send({ error: 'Item not found' });
+      return;
+    }
+
     const results = await this.shoppingListsRepository.searchShoppingListsByItem(id);
-    res.send(results);
+    if (results.length === 0) {
+      res.status(404).send({ error: 'No shopping lists found for this item' });
+      return;
+    }
+
+    res.status(200).send(results);
   }
 }
