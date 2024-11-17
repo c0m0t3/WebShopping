@@ -24,9 +24,7 @@ export class ItemsController {
   }
 
   async createItems(req: Request, res: Response): Promise<void> {
-    console.log("createdItems called");
     const createdItems = await this.itemRepository.createItems(req.body);
-    console.log("createdItems called 2");
     if (createdItems.length === 0) {
       res.status(409).send('No new items were created because they already exist.');
     } else {

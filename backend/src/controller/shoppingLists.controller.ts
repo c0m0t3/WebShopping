@@ -19,7 +19,6 @@ export class ShoppingListsController {
     const shoppingList = await this.shoppingListsRepository.getShoppingListById(
       req.params.id,
     );
-    console.log(shoppingList);
     if (!shoppingList) {
       res.status(404).send({ error: 'ShoppingList not found' });
       return;
@@ -205,7 +204,6 @@ export class ShoppingListsController {
       return;
     }
     const { id } = req.params;
-    console.log("Search 2" + id);
     const results = await this.shoppingListsRepository.searchShoppingListsByItem(id);
     res.send(results);
   }

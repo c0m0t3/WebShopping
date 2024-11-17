@@ -7,6 +7,11 @@ import { eq, and } from 'drizzle-orm';
 export class ShoppingListsRepository {
   constructor(private readonly database: Database) {}
 
+  async clear() {
+    await this.database.delete(shoppingListItems).execute();
+    await this.database.delete(shoppingLists).execute();
+  }
+
   async getShoppingListById(id: string) {
     return this.database.query.shoppingLists.findFirst({
       where: (itemLists, { eq }) => eq(itemLists.id, id),
