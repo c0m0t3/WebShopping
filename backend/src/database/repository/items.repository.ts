@@ -14,9 +14,10 @@ export class ItemsRepository {
   }
 
   async getItemById(id: string) {
-    return this.database.query.items.findFirst({
+    const item = await this.database.query.items.findFirst({
       where: (items, { eq }) => eq(items.id, id),
     });
+    return item || null;
   }
 
   async getItemsById(ids: string[]) {
