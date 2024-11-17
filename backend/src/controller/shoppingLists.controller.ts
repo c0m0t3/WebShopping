@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ShoppingListsRepository } from '../database/repository/shoppingLists.repository';
-import { createShoppingListZodSchema } from '../validation/validation';
+import { associateItemsWithShoppingListSchema, createShoppingListZodSchema } from '../validation/validation';
 import { updateShoppingListZodSchema } from '../validation/validation';
 import { ItemsRepository } from '../database/repository/items.repository';
 
@@ -89,11 +89,19 @@ export class ShoppingListsController {
   async updateShoppingList(req: Request, res: Response): Promise<void> {
       const validatedData = updateShoppingListZodSchema.parse(req.body);
       const updatedShoppingList = await this.shoppingListsRepository.updateShoppingList(req.params.id, validatedData);
+
+      if(updatedShoppingList === null) {
+        res.status(404).send({ error: 'ShoppingList not found' });
+        return;
+      }
       res.status(200).send(updatedShoppingList);
   }
 
   async associateItemsWithShoppingList(req: Request, res: Response): Promise<void> {
-    const { items } = req.body;
+
+    const validatedData = associateItemsWithShoppingListSchema.parse(req.body);
+
+    const { items } = validatedData;
     const itemIds = items.map((item: { itemId: string }) => item.itemId);
 
     for (const id of itemIds) {
@@ -109,7 +117,11 @@ export class ShoppingListsController {
       }
     }
 
-    await this.shoppingListsRepository.associateItemsWithShoppingList(req.params.id, items);
+    const result = await this.shoppingListsRepository.associateItemsWithShoppingList(req.params.id, items);
+    if(result === null) {
+      res.status(404).send({ error: 'ShoppingList not found' });
+      return;
+    }
     res.status(200).send('Items added to shopping list');
   }
 

@@ -39,19 +39,29 @@ export class ShoppingListsRepository {
   }
 
   async updateShoppingList(id: string, data: CreateItem) {
-    return this.database
+    const result = await this.database
       .update(shoppingLists)
       .set({
         ...data,
         description: data.description ?? '', // Provide a default value if description is null or undefined
       })
       .where(eq(shoppingLists.id, id));
+
+    return (result.rowCount ?? 0) > 0 ? result : null;
   }
 
   async associateItemsWithShoppingList(
     shoppingListId: string,
     items: { itemId: string; quantity?: number }[],
   ) {
+    const shoppingListExists = await this.database.query.shoppingLists.findFirst({
+      where: (shoppingLists, { eq }) => eq(shoppingLists.id, shoppingListId),
+    });
+
+    if (!shoppingListExists) {
+      return null;
+    }
+
     for (const item of items) {
       const existingItem = await this.database.query.shoppingListItems.findFirst({
         where: (shoppingListItems, { and, eq }) =>

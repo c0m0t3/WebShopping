@@ -3,9 +3,7 @@ import { AuthController } from '../controller/auth.controller';
 import { HealthController } from '../controller/health.controller';
 import { ItemsController } from '../controller/items.controller';
 import { ShoppingListsController } from '../controller/shoppingLists.controller';
-import { associateItemsWithShoppingListSchema } from '../validation/validation';
 import { validateUUID } from '../middleware/validateUUID';
-import { globalErrorHandler } from '../utils/global-error';
 
 //todo hier kommen die Controller der Klassen hin
 
@@ -100,21 +98,12 @@ export class Routes {
     );
   // ShoppingLists items routes
     this.router.post(
-      '/shoppingLists/:id/items', //TODO es muss noch geprüft werden ob die Items existieren
+      '/shoppingLists/:id/items',
       validateUUID,
-      (req, res, next) => {
-        try {
-          associateItemsWithShoppingListSchema.parse(req.body);
-          next();
-        } catch (e) {
-          next(e); //
-        }
-      },
       this.ShoppingListsController.associateItemsWithShoppingList.bind(
         this.ShoppingListsController,
       ),
     );
-    this.router.use(globalErrorHandler);
 
     this.router.delete(
       '/shoppingLists/:id/items/:itemId',
