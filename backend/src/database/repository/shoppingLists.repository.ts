@@ -12,6 +12,13 @@ export class ShoppingListsRepository {
     await this.database.delete(shoppingLists).execute();
   }
 
+  async shoppingListExistsByName(name: string): Promise<boolean> {
+    const result = await this.database.query.shoppingLists.findFirst({
+      where: (shoppingLists, { eq }) => eq(shoppingLists.name, name),
+    });
+    return !!result;
+  }
+
   async getShoppingListById(id: string) {
     return this.database.query.shoppingLists.findFirst({
       where: (itemLists, { eq }) => eq(itemLists.id, id),

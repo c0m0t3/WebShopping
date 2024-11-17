@@ -52,7 +52,8 @@ describe('ShoppingListsController', () => {
     const shoppingLists = await shoppingListsRepository.getShoppingLists();
     const items = await itemsRepository.getItems();
 
-    await shoppingListsRepository.associateItemsWithShoppingList(shoppingLists[0].id, [{ itemId: items[0].id, quantity: 1 }]); });
+    await shoppingListsRepository.associateItemsWithShoppingList(shoppingLists[0].id, [{ itemId: items[0].id, quantity: 1 }]);
+  });
 
   describe('GET /health', () => {
     it('should return a health status', async () => {
@@ -121,6 +122,20 @@ describe('ShoppingListsController', () => {
         description: "",
       });
     });
+
+    it('should return 400 if validation fails', async () => {
+      const response = await request(app)
+        .post('/shoppingLists')
+        .send({ invalidField: 'Invalid Data' });
+      expect(response.status).toBe(400);
+    });
+
+    it('should return 409 if the shopping list already exists', async () => {
+      const response = await request(app)
+        .post('/shoppingLists')
+        .send({ "name": 'Test Shopping List 1' });
+      expect(response.status).toBe(409);
+    });
   });
 
   describe('DELETE /shoppingLists/:id', () => {
@@ -177,6 +192,28 @@ describe('ShoppingListsController', () => {
         .send({ items: [{ itemId: itemId, quantity: 1 }] });
       expect(response.status).toBe(200);
     });
+
+    it('should return 400 if itemId is missing', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+
+      const response = await request(app)
+        .post(`/shoppingLists/${shoppingListId}/items`)
+        .send({ items: [{ quantity: 1 }] });
+
+
+      expect(response.status).toBe(400);
+    });
+
+    it('should return 404 if item does not exist', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+
+      const response = await request(app)
+        .post(`/shoppingLists/${shoppingListId}/items`)
+        .send({ items: [{ itemId: '1bcbecc6-8c96-4263-9579-1abb79b517bb', quantity: 1 }] });
+      expect(response.status).toBe(404);
+    });
   });
 
   describe('DELETE /shoppingLists/:id/items/:itemId', () => {
@@ -187,6 +224,11 @@ describe('ShoppingListsController', () => {
 
       const response = await request(app).delete(`/shoppingLists/${shoppingListId}/items/${items[0].id}`);
       expect(response.status).toBe(204);
+    });
+
+    it('should return 404 if item or shopping list does not exist', async () => {
+      const response = await request(app).delete('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb/items/1bcbecc6-8c96-4263-9579-1abb79b517bb');
+      expect(response.status).toBe(404);
     });
   });
 
@@ -209,6 +251,18 @@ describe('ShoppingListsController', () => {
         .put(`/shoppingLists/${shoppingListId}/items/1bcbecc6-8c96-4263-9579-1abb79b517bb`)
         .send({ quantity: 2 });
       expect(response.status).toBe(200);
+    });
+
+    it('should return 400 if quantity is not greater than 0', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+      const items = await itemsRepository.getItems();
+      const itemId = items[0].id;
+
+      const response = await request(app)
+        .put(`/shoppingLists/${shoppingListId}/items/${itemId}`)
+        .send({ quantity: 0 });
+      expect(response.status).toBe(400);
     });
   });
 

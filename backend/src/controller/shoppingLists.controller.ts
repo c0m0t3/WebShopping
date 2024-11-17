@@ -31,11 +31,26 @@ export class ShoppingListsController {
     res.status(200).send(shoppingLists);
   }
 
+  // In ShoppingListsController
   async createShoppingList(req: Request, res: Response): Promise<void> {
-    const validatedData = createShoppingListZodSchema.parse(req.body);
+    let validatedData = null;
+    //TODO fix irgendwie
+    //const validatedData = createShoppingListZodSchema.parse(req.body); //eigentlich richtiger weg aber jest sagt nein
+    try {
+       validatedData = createShoppingListZodSchema.parse(req.body);
+    }
+    catch (e) {
+      console.log("error: ", e);
+      res.status(400).send();
+      return;
+    }
+    const exists = await this.shoppingListsRepository.shoppingListExistsByName(validatedData.name);
+    if (exists) {
+      res.status(409).send({ error: 'ShoppingList with the same name already exists' });
+      return;
+    }
 
-    const createdShoppingList =
-      await this.shoppingListsRepository.createShoppingList(validatedData);
+    const createdShoppingList = await this.shoppingListsRepository.createShoppingList(validatedData);
 
     const itemsWithName: { name: string; description?: string; quantity?: number }[] = [];
     const itemsWithId: { id: string; quantity?: number }[] = [];
@@ -114,8 +129,14 @@ export class ShoppingListsController {
       res.status(400).send({ error: 'Invalid UUID' });
       return;
     }
-
-    const validatedData = associateItemsWithShoppingListSchema.parse(req.body);
+    // const validatedData = associateItemsWithShoppingListSchema.parse(req.body); //TODO fix irgendwie
+    let validatedData = null;
+    try {
+      validatedData = associateItemsWithShoppingListSchema.parse(req.body);
+    } catch (e) {
+      res.status(400).send();
+      return;
+    }
 
     const { items } = validatedData;
     const itemIds = items.map((item: { itemId: string }) => item.itemId);

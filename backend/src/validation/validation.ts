@@ -41,7 +41,7 @@ export const createShoppingListZodSchema = createInsertSchema(shoppingLists, {
           }),
       )
       .optional(),
-  });
+  }).strict();
 
 export const updateShoppingListZodSchema = z.object({
   name: z.string().min(1),
@@ -60,7 +60,7 @@ export const associateItemsWithShoppingListSchema = z.object({
       quantity: z.number().int().positive().optional(),
     })
   ),
-});
+}).strict();
 
 export const loginZodSchema = z.object({
   email: z.string().email(),
