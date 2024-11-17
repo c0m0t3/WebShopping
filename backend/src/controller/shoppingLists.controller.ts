@@ -115,20 +115,32 @@ export class ShoppingListsController {
 
   async removeItemFromShoppingList(req: Request, res: Response): Promise<void> {
     const { id, itemId } = req.params;
-    await this.shoppingListsRepository.removeItemFromShoppingList(id, itemId);
+    const result = await this.shoppingListsRepository.removeItemFromShoppingList(id, itemId);
+    if (result === null) {
+      res.status(404).send({ error: 'Item or Shopping List not found' });
+      return
+    }
     res.status(204).send();
   }
 
   async updateShoppingListItems(req: Request, res: Response): Promise<void> {
     const { id, itemId } = req.params;
     const { quantity, is_purchased } = req.body;
-    await this.shoppingListsRepository.updateShoppingListItems(id, itemId, quantity, is_purchased);
+    const answer = await this.shoppingListsRepository.updateShoppingListItems(id, itemId, quantity, is_purchased);
+    if(answer === null) {
+      res.status(400).send('Quantity must be greater than 0');
+      return;
+    }
     res.status(200).send();
   }
 
   async getShoppingListItems(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const items = await this.shoppingListsRepository.getShoppingListItems(id);
+    if (items === null) {
+      res.status(404).send({ error: 'ShoppingList not found' });
+      return;
+    }
     res.status(200).send(items);
   }
 

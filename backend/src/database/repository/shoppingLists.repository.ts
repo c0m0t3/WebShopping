@@ -75,12 +75,25 @@ export class ShoppingListsRepository {
   }
 
   async removeItemFromShoppingList(shoppingListId: string, itemId: string) {
+    const existingItem = await this.database.query.shoppingListItems.findFirst({
+      where: (shoppingListItems, { and, eq }) =>
+        and(eq(shoppingListItems.shoppingListId, shoppingListId), eq(shoppingListItems.itemId, itemId)),
+    });
+
+    if (!existingItem) {
+      return null;
+    }
+
     return this.database
       .delete(shoppingListItems)
       .where(and(eq(shoppingListItems.shoppingListId, shoppingListId), eq(shoppingListItems.itemId, itemId)));
   }
 
   async updateShoppingListItems(shoppingListId: string, itemId: string, quantity: number, is_purchased: boolean) {
+    if (quantity < 1) {
+      return null;
+    }
+
     return this.database
       .update(shoppingListItems)
       .set({
@@ -91,9 +104,11 @@ export class ShoppingListsRepository {
   }
 
   async getShoppingListItems(shoppingListId: string) {
-    return this.database.query.shoppingListItems.findMany({
+    const items = await this.database.query.shoppingListItems.findMany({
       where: (items, { eq }) => eq(items.shoppingListId, shoppingListId),
     });
+
+    return items.length > 0 ? items : null;
   }
 
   async searchShoppingLists(query: string) {
