@@ -3,6 +3,7 @@ import { ShoppingListsRepository } from '../database/repository/shoppingLists.re
 import { associateItemsWithShoppingListSchema, createShoppingListZodSchema } from '../validation/validation';
 import { updateShoppingListZodSchema } from '../validation/validation';
 import { ItemsRepository } from '../database/repository/items.repository';
+import {validate as isUUID } from 'uuid';
 
 export class ShoppingListsController {
   constructor(
@@ -11,6 +12,10 @@ export class ShoppingListsController {
   ) {}
 
   async getShoppingListById(req: Request, res: Response): Promise<void> {
+    if (!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
     const shoppingList = await this.shoppingListsRepository.getShoppingListById(
       req.params.id,
     );
@@ -75,6 +80,10 @@ export class ShoppingListsController {
   }
 
   async deleteShoppingList(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
     const { id } = req.params;
     const result = await this.shoppingListsRepository.deleteShoppingList(id);
 
@@ -87,6 +96,10 @@ export class ShoppingListsController {
   }
 
   async updateShoppingList(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
       const validatedData = updateShoppingListZodSchema.parse(req.body);
       const updatedShoppingList = await this.shoppingListsRepository.updateShoppingList(req.params.id, validatedData);
 
@@ -98,6 +111,10 @@ export class ShoppingListsController {
   }
 
   async associateItemsWithShoppingList(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
 
     const validatedData = associateItemsWithShoppingListSchema.parse(req.body);
 
@@ -126,6 +143,10 @@ export class ShoppingListsController {
   }
 
   async removeItemFromShoppingList(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id) || !isUUID(req.params.itemId)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
     const { id, itemId } = req.params;
     const result = await this.shoppingListsRepository.removeItemFromShoppingList(id, itemId);
     if (result === null) {
@@ -136,6 +157,10 @@ export class ShoppingListsController {
   }
 
   async updateShoppingListItems(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id) || !isUUID(req.params.itemId)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
     const { id, itemId } = req.params;
     const { quantity, is_purchased } = req.body;
     const answer = await this.shoppingListsRepository.updateShoppingListItems(id, itemId, quantity, is_purchased);
@@ -147,6 +172,10 @@ export class ShoppingListsController {
   }
 
   async getShoppingListItems(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
     const { id } = req.params;
     const items = await this.shoppingListsRepository.getShoppingListItems(id);
     if (items === null) {
@@ -171,6 +200,10 @@ export class ShoppingListsController {
   }
 
   async searchShoppingListsByItem(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
     const { id } = req.params;
     console.log("Search 2" + id);
     const results = await this.shoppingListsRepository.searchShoppingListsByItem(id);

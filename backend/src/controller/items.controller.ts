@@ -1,10 +1,15 @@
 import { Request, Response } from 'express';
 import { ItemsRepository } from '../database/repository/items.repository';
+import { validate as isUUID } from 'uuid';
 
 export class ItemsController {
   constructor(private readonly itemRepository: ItemsRepository) {}
 
   async getItemById(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
     const item = await this.itemRepository.getItemById(req.params.id);
     if (!item) {
       res.status(404).send('Item not found');
@@ -19,7 +24,9 @@ export class ItemsController {
   }
 
   async createItems(req: Request, res: Response): Promise<void> {
+    console.log("createdItems called");
     const createdItems = await this.itemRepository.createItems(req.body);
+    console.log("createdItems called 2");
     if (createdItems.length === 0) {
       res.status(409).send('No new items were created because they already exist.');
     } else {
@@ -28,6 +35,10 @@ export class ItemsController {
   }
 
   async deleteItem(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
     const result = await this.itemRepository.deleteItemFromDatabase(req.params.id);
     if (!result) {
       res.status(404).send('Item not found');
@@ -37,6 +48,10 @@ export class ItemsController {
   }
 
   async updateItem(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
     const updatedItem = await this.itemRepository.updateItem(
       req.params.id,
       req.body,
