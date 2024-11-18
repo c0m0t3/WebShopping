@@ -11,6 +11,6 @@ export const shoppingListItems = pgTable('shoppingListItems', {
   return {
     pk: primaryKey({ columns: [table.shoppingListId, table.itemId] }),
     fkShoppingList: foreignKey({ columns: [table.shoppingListId], foreignColumns: [shoppingLists.id] }),
-    fkItem: foreignKey({ columns: [table.itemId], foreignColumns: [items.id] }),
+    fkItem: foreignKey({ columns: [table.itemId], foreignColumns: [items.id]}),
   };
 });
