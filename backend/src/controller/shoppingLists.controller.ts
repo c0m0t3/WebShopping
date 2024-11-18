@@ -27,6 +27,7 @@ export class ShoppingListsController {
   }
 
   async getShoppingLists(req: Request, res: Response): Promise<void> {
+    console.log("getShoppingLists called");
     const shoppingLists = await this.shoppingListsRepository.getShoppingLists();
     res.status(200).send(shoppingLists);
   }
@@ -129,6 +130,7 @@ export class ShoppingListsController {
       res.status(400).send({ error: 'Invalid UUID' });
       return;
     }
+    console.log(req.body);
     // const validatedData = associateItemsWithShoppingListSchema.parse(req.body); //TODO fix irgendwie
     let validatedData = null;
     try {

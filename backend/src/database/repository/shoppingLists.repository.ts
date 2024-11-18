@@ -2,7 +2,7 @@ import type { Database } from '..';
 import { CreateItem } from '../../validation/validation';
 import { shoppingLists } from '../schema/shoppingLists.schema';
 import { shoppingListItems } from '../schema/shoppingListItems.schema';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, } from 'drizzle-orm';
 
 export class ShoppingListsRepository {
   constructor(private readonly database: Database) {}
@@ -24,9 +24,29 @@ export class ShoppingListsRepository {
       where: (itemLists, { eq }) => eq(itemLists.id, id),
     });
   }
-
-  async getShoppingLists() {
-    return this.database.query.shoppingLists.findMany();
+  async getShoppingLists(includeRelations = false) {
+    console.log("getShoppingLists in repository called");
+    try {
+      const queryConfig = {
+        with: includeRelations
+          ? {
+            shoppingListItems: {
+              select: {
+                quantity: true,
+                is_purchased: true,
+              },
+            },
+          }
+          : undefined,
+      };
+      console.log("Generated query config:", queryConfig);
+      const result = await this.database.query.shoppingLists.findMany(queryConfig);
+      console.log("Query result:", result);
+      return result;
+    } catch (error) {
+      console.error("Detailed error:", error);  // Detailliertere Fehlerausgabe
+      throw new Error("Error fetching shopping lists");
+    }
   }
 
   async createShoppingList(data: CreateItem) {
