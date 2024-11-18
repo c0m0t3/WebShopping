@@ -146,6 +146,17 @@ describe('ShoppingListsController', () => {
       const response = await request(app).delete(`/shoppingLists/${shoppingListId}`);
       expect(response.status).toBe(204);
     });
+    it('should delete all items associated with the shopping list', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+      const items = await itemsRepository.getItems();
+      const itemId = items[0].id;
+
+      await shoppingListsRepository.associateItemsWithShoppingList(shoppingListId, [{ itemId: itemId, quantity: 1 }]);
+
+      const response = await request(app).delete(`/shoppingLists/${shoppingListId}`);
+      expect(response.status).toBe(204);
+    });
     it('should return a 404 if the shopping list does not exist', async () => {
       const response = await request(app).delete('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb');
       expect(response.status).toBe(404);

@@ -10,7 +10,7 @@ export const shoppingListItems = pgTable('shoppingListItems', {
 }, (table) => {
   return {
     pk: primaryKey({ columns: [table.shoppingListId, table.itemId] }),
-    fkShoppingList: foreignKey({ columns: [table.shoppingListId], foreignColumns: [shoppingLists.id] }),
+    fkShoppingList: foreignKey({ columns: [table.shoppingListId], foreignColumns: [shoppingLists.id] }).onDelete('cascade'),
     fkItem: foreignKey({ columns: [table.itemId], foreignColumns: [items.id]}),
   };
 });
