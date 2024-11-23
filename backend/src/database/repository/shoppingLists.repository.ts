@@ -20,13 +20,14 @@ export class ShoppingListsRepository {
   }
 
   async getShoppingListById(id: string) {
-    return this.database.query.shoppingLists.findFirst({
+    const shoppingList = await this.database.query.shoppingLists.findFirst({
       where: (itemLists, { eq }) => eq(itemLists.id, id),
     });
+    return shoppingList || null;
   }
   async getShoppingLists(includeRelations = false) {
-    console.log("getShoppingLists in repository called");
-    try {
+    //console.log("getShoppingLists in repository called");
+    //try {
       const queryConfig = {
         with: includeRelations
           ? {
@@ -39,17 +40,25 @@ export class ShoppingListsRepository {
           }
           : undefined,
       };
-      console.log("Generated query config:", queryConfig);
+      //console.log("Generated query config:", queryConfig);
       const result = await this.database.query.shoppingLists.findMany(queryConfig);
-      console.log("Query result:", result);
+      //console.log("Query result:", result);
       return result;
-    } catch (error) {
-      console.error("Detailed error:", error);  // Detailliertere Fehlerausgabe
-      throw new Error("Error fetching shopping lists");
-    }
+   // } catch (error) {
+   //   //console.error("Detailed error:", error);  // Detailliertere Fehlerausgabe
+   //   throw new Error("Error fetching shopping lists");
+   // }
   }
-
   async createShoppingList(data: CreateItem) {
+    // Check if the shopping list already exists by name
+    const existingShoppingList = await this.database.query.shoppingLists.findFirst({
+      where: (shoppingLists, { eq }) => eq(shoppingLists.name, data.name),
+    });
+
+    if (existingShoppingList) {
+      return null; // or handle it as needed
+    }
+
     const [createdShoppingList] = await this.database
       .insert(shoppingLists)
       .values({

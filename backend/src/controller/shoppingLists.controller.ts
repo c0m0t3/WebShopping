@@ -52,6 +52,10 @@ export class ShoppingListsController {
     }
 
     const createdShoppingList = await this.shoppingListsRepository.createShoppingList(validatedData);
+    if (createdShoppingList === null) {
+      res.status(400).send({ error: 'Error creating shopping list' });
+      return;
+    }
 
     const itemsWithName: { name: string; description?: string; quantity?: number }[] = [];
     const itemsWithId: { id: string; quantity?: number }[] = [];
@@ -130,7 +134,7 @@ export class ShoppingListsController {
       res.status(400).send({ error: 'Invalid UUID' });
       return;
     }
-    console.log(req.body);
+    //console.log(req.body);
     // const validatedData = associateItemsWithShoppingListSchema.parse(req.body); //TODO fix irgendwie
     let validatedData = null;
     try {
