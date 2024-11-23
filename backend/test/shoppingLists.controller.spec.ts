@@ -100,10 +100,12 @@ describe('ShoppingListsController', () => {
         updatedAt: expect.any(String),
       });
     });
+
     it('should return a 404 if the shopping list does not exist', async () => {
       const response = await request(app).get('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb');
       expect(response.status).toBe(404);
     });
+
     it('should return a 400 if the ID is not a valid UUID', async () => {
       const response = await request(app).get('/shoppingLists/invalid-uuid');
       expect(response.status).toBe(400);
@@ -133,19 +135,49 @@ describe('ShoppingListsController', () => {
     it('should return 409 if the shopping list already exists', async () => {
       const response = await request(app)
         .post('/shoppingLists')
-        .send({ "name": 'Test Shopping List 1' });
+        .send({ name: 'Test Shopping List 1' });
       expect(response.status).toBe(409);
+    });
+
+    it('should return 400 if creation fails', async () => {
+      jest.spyOn(shoppingListsRepository, 'createShoppingList').mockResolvedValueOnce(null);
+      const response = await request(app)
+        .post('/shoppingLists')
+        .send({ name: 'New Shopping List' });
+      expect(response.status).toBe(400);
+    });
+
+    it('should create items if itemsWithName is not empty', async () => {
+      const response = await request(app)
+        .post('/shoppingLists')
+        .send({
+          name: 'Test Shopping List 4',
+          items: [{ name: 'New Item', description: 'New Item Description', quantity: 1 }],
+        });
+      expect(response.status).toBe(201);
+    });
+
+    it('should associate items with shopping list if itemsWithId is not empty', async () => {
+      const items = await itemsRepository.getItems();
+      const response = await request(app)
+        .post('/shoppingLists')
+        .send({
+          name: 'Test Shopping List 5',
+          items: [{ id: items[0].id, quantity: 1 }],
+        });
+      expect(response.status).toBe(201);
     });
   });
 
   describe('DELETE /shoppingLists/:id', () => {
-    it('should delete a shopping list by ID', async () => { //TODO fix this test, da Items noch nicht gelöscht werden
+    it('should delete a shopping list by ID', async () => {
       const shoppingLists = await shoppingListsRepository.getShoppingLists();
       const shoppingListId = shoppingLists[1].id;
 
       const response = await request(app).delete(`/shoppingLists/${shoppingListId}`);
       expect(response.status).toBe(204);
     });
+
     it('should delete all items associated with the shopping list', async () => {
       const shoppingLists = await shoppingListsRepository.getShoppingLists();
       const shoppingListId = shoppingLists[0].id;
@@ -157,10 +189,12 @@ describe('ShoppingListsController', () => {
       const response = await request(app).delete(`/shoppingLists/${shoppingListId}`);
       expect(response.status).toBe(204);
     });
+
     it('should return a 404 if the shopping list does not exist', async () => {
       const response = await request(app).delete('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb');
       expect(response.status).toBe(404);
     });
+
     it('should return a 400 if the ID is not a valid UUID', async () => {
       const response = await request(app).delete('/shoppingLists/invalid-uuid');
       expect(response.status).toBe(400);
@@ -177,12 +211,14 @@ describe('ShoppingListsController', () => {
         .send({ name: 'Test Shopping List 1 Updated' });
       expect(response.status).toBe(200);
     });
+
     it('should return a 404 if the shopping list does not exist', async () => {
       const response = await request(app)
         .put('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb')
         .send({ name: 'Test Shopping List 1 Updated' });
       expect(response.status).toBe(404);
     });
+
     it('should return a 400 if the ID is not a valid UUID', async () => {
       const response = await request(app)
         .put('/shoppingLists/invalid-uuid')
@@ -211,8 +247,6 @@ describe('ShoppingListsController', () => {
       const response = await request(app)
         .post(`/shoppingLists/${shoppingListId}/items`)
         .send({ items: [{ quantity: 1 }] });
-
-
       expect(response.status).toBe(400);
     });
 
@@ -240,6 +274,11 @@ describe('ShoppingListsController', () => {
     it('should return 404 if item or shopping list does not exist', async () => {
       const response = await request(app).delete('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb/items/1bcbecc6-8c96-4263-9579-1abb79b517bb');
       expect(response.status).toBe(404);
+    });
+
+    it('should return 400 if the ID is not a valid UUID', async () => {
+      const response = await request(app).delete('/shoppingLists/invalid-uuid/items/invalid-uuid');
+      expect(response.status).toBe(400);
     });
   });
 
@@ -275,12 +314,30 @@ describe('ShoppingListsController', () => {
         .send({ quantity: 0 });
       expect(response.status).toBe(400);
     });
+
+    it('should return 400 if the ID is not a valid UUID', async () => {
+      const response = await request(app)
+        .put('/shoppingLists/invalid-uuid/items/invalid-uuid')
+        .send({ quantity: 2 });
+      expect(response.status).toBe(400);
+    });
   });
 
   describe('GET /shoppingLists/search/search', () => {
     it('should search shopping lists', async () => {
       const response = await request(app).get('/shoppingLists/search/search?query=Test');
       expect(response.status).toBe(200);
+    });
+
+    it('should return 400 if query parameter is missing', async () => {
+      const response = await request(app).get('/shoppingLists/search/search');
+      expect(response.status).toBe(400);
+    });
+
+    it('should return 200 with an empty array if query is empty', async () => {
+      const response = await request(app).get('/shoppingLists/search/search?query=');
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([]);
     });
   });
 
@@ -301,271 +358,10 @@ describe('ShoppingListsController', () => {
       const response = await request(app).get('/shoppingLists/search/1bcbecc6-8c96-4263-9579-1abb79b517bb');
       expect(response.status).toBe(404);
     });
-  });
 
-  describe('ShoppingListsController additional tests', () => {
-    describe('createShoppingList', () => {
-      it('should return 400 if validation fails', async () => {
-        const response = await request(app)
-          .post('/shoppingLists')
-          .send({ invalidField: 'Invalid Data' });
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 409 if the shopping list already exists', async () => {
-        const response = await request(app)
-          .post('/shoppingLists')
-          .send({ name: 'Test Shopping List 1' });
-        expect(response.status).toBe(409);
-      });
-
-      it('should return 400 if creation fails', async () => {
-        jest.spyOn(shoppingListsRepository, 'createShoppingList').mockResolvedValueOnce(null);
-        const response = await request(app)
-          .post('/shoppingLists')
-          .send({ name: 'New Shopping List' });
-        expect(response.status).toBe(400);
-      });
-    });
-
-    describe('deleteShoppingList', () => {
-      it('should return 400 if the ID is not a valid UUID', async () => {
-        const response = await request(app).delete('/shoppingLists/invalid-uuid');
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 404 if the shopping list does not exist', async () => {
-        const response = await request(app).delete('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb');
-        expect(response.status).toBe(404);
-      });
-    });
-
-    describe('updateShoppingList', () => {
-      it('should return 400 if the ID is not a valid UUID', async () => {
-        const response = await request(app)
-          .put('/shoppingLists/invalid-uuid')
-          .send({ name: 'Updated Shopping List' });
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 404 if the shopping list does not exist', async () => {
-        const response = await request(app)
-          .put('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb')
-          .send({ name: 'Updated Shopping List' });
-        expect(response.status).toBe(404);
-      });
-    });
-
-    describe('associateItemsWithShoppingList', () => {
-      it('should return 400 if itemId is missing', async () => {
-        const shoppingLists = await shoppingListsRepository.getShoppingLists();
-        const shoppingListId = shoppingLists[0].id;
-
-        const response = await request(app)
-          .post(`/shoppingLists/${shoppingListId}/items`)
-          .send({ items: [{ quantity: 1 }] });
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 404 if item does not exist', async () => {
-        const shoppingLists = await shoppingListsRepository.getShoppingLists();
-        const shoppingListId = shoppingLists[0].id;
-
-        const response = await request(app)
-          .post(`/shoppingLists/${shoppingListId}/items`)
-          .send({ items: [{ itemId: '1bcbecc6-8c96-4263-9579-1abb79b517bb', quantity: 1 }] });
-        expect(response.status).toBe(404);
-      });
-    });
-
-    describe('removeItemFromShoppingList', () => {
-      it('should return 400 if the ID is not a valid UUID', async () => {
-        const response = await request(app).delete('/shoppingLists/invalid-uuid/items/invalid-uuid');
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 404 if item or shopping list does not exist', async () => {
-        const response = await request(app).delete('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb/items/1bcbecc6-8c96-4263-9579-1abb79b517bb');
-        expect(response.status).toBe(404);
-      });
-    });
-
-    describe('updateShoppingListItems', () => {
-      it('should return 400 if quantity is not greater than 0', async () => {
-        const shoppingLists = await shoppingListsRepository.getShoppingLists();
-        const shoppingListId = shoppingLists[0].id;
-        const items = await itemsRepository.getItems();
-        const itemId = items[0].id;
-
-        const response = await request(app)
-          .put(`/shoppingLists/${shoppingListId}/items/${itemId}`)
-          .send({ quantity: 0 });
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 400 if the ID is not a valid UUID', async () => {
-        const response = await request(app)
-          .put('/shoppingLists/invalid-uuid/items/invalid-uuid')
-          .send({ quantity: 2 });
-        expect(response.status).toBe(400);
-      });
-    });
-
-    describe('searchShoppingLists', () => {
-      it('should return 400 if query parameter is missing', async () => {
-        const response = await request(app).get('/shoppingLists/search/search');
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 200 with an empty array if query is empty', async () => {
-        const response = await request(app).get('/shoppingLists/search/search?query=');
-        expect(response.status).toBe(200);
-        expect(response.body).toEqual([]);
-      });
-    });
-
-    describe('searchShoppingListsByItem', () => {
-      it('should return 400 if the ID is not a valid UUID', async () => {
-        const response = await request(app).get('/shoppingLists/search/invalid-uuid');
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 404 if the item does not exist', async () => {
-        const response = await request(app).get('/shoppingLists/search/1bcbecc6-8c96-4263-9579-1abb79b517bb');
-        expect(response.status).toBe(404);
-      });
-    });
-  });
-  describe('ShoppingListsController additional tests', () => {
-    describe('createShoppingList', () => {
-      it('should create items if itemsWithName is not empty', async () => {
-        const response = await request(app)
-          .post('/shoppingLists')
-          .send({
-            name: 'Test Shopping List 4',
-            items: [{ name: 'New Item', description: 'New Item Description', quantity: 1 }],
-          });
-        expect(response.status).toBe(201);
-      });
-
-      it('should associate items with shopping list if itemsWithId is not empty', async () => {
-        const items = await itemsRepository.getItems();
-        const response = await request(app)
-          .post('/shoppingLists')
-          .send({
-            name: 'Test Shopping List 5',
-            items: [{ id: items[0].id, quantity: 1 }],
-          });
-        expect(response.status).toBe(201);
-      });
-    });
-
-    describe('deleteShoppingList', () => {
-      it('should return 400 if the ID is not a valid UUID', async () => {
-        const response = await request(app).delete('/shoppingLists/invalid-uuid');
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 404 if the shopping list does not exist', async () => {
-        const response = await request(app).delete('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb');
-        expect(response.status).toBe(404);
-      });
-    });
-
-    describe('updateShoppingList', () => {
-      it('should return 400 if the ID is not a valid UUID', async () => {
-        const response = await request(app)
-          .put('/shoppingLists/invalid-uuid')
-          .send({ name: 'Updated Shopping List' });
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 404 if the shopping list does not exist', async () => {
-        const response = await request(app)
-          .put('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb')
-          .send({ name: 'Updated Shopping List' });
-        expect(response.status).toBe(404);
-      });
-    });
-
-    describe('associateItemsWithShoppingList', () => {
-      it('should return 400 if itemId is missing', async () => {
-        const shoppingLists = await shoppingListsRepository.getShoppingLists();
-        const shoppingListId = shoppingLists[0].id;
-
-        const response = await request(app)
-          .post(`/shoppingLists/${shoppingListId}/items`)
-          .send({ items: [{ quantity: 1 }] });
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 404 if item does not exist', async () => {
-        const shoppingLists = await shoppingListsRepository.getShoppingLists();
-        const shoppingListId = shoppingLists[0].id;
-
-        const response = await request(app)
-          .post(`/shoppingLists/${shoppingListId}/items`)
-          .send({ items: [{ itemId: '1bcbecc6-8c96-4263-9579-1abb79b517bb', quantity: 1 }] });
-        expect(response.status).toBe(404);
-      });
-    });
-
-    describe('removeItemFromShoppingList', () => {
-      it('should return 400 if the ID is not a valid UUID', async () => {
-        const response = await request(app).delete('/shoppingLists/invalid-uuid/items/invalid-uuid');
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 404 if item or shopping list does not exist', async () => {
-        const response = await request(app).delete('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb/items/1bcbecc6-8c96-4263-9579-1abb79b517bb');
-        expect(response.status).toBe(404);
-      });
-    });
-
-    describe('updateShoppingListItems', () => {
-      it('should return 400 if quantity is not greater than 0', async () => {
-        const shoppingLists = await shoppingListsRepository.getShoppingLists();
-        const shoppingListId = shoppingLists[0].id;
-        const items = await itemsRepository.getItems();
-        const itemId = items[0].id;
-
-        const response = await request(app)
-          .put(`/shoppingLists/${shoppingListId}/items/${itemId}`)
-          .send({ quantity: 0 });
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 400 if the ID is not a valid UUID', async () => {
-        const response = await request(app)
-          .put('/shoppingLists/invalid-uuid/items/invalid-uuid')
-          .send({ quantity: 2 });
-        expect(response.status).toBe(400);
-      });
-    });
-
-    describe('searchShoppingLists', () => {
-      it('should return 400 if query parameter is missing', async () => {
-        const response = await request(app).get('/shoppingLists/search/search');
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 200 with an empty array if query is empty', async () => {
-        const response = await request(app).get('/shoppingLists/search/search?query=');
-        expect(response.status).toBe(200);
-        expect(response.body).toEqual([]);
-      });
-    });
-
-    describe('searchShoppingListsByItem', () => {
-      it('should return 400 if the ID is not a valid UUID', async () => {
-        const response = await request(app).get('/shoppingLists/search/invalid-uuid');
-        expect(response.status).toBe(400);
-      });
-
-      it('should return 404 if the item does not exist', async () => {
-        const response = await request(app).get('/shoppingLists/search/1bcbecc6-8c96-4263-9579-1abb79b517bb');
-        expect(response.status).toBe(404);
-      });
+    it('should return 400 if the ID is not a valid UUID', async () => {
+      const response = await request(app).get('/shoppingLists/search/invalid-uuid');
+      expect(response.status).toBe(400);
     });
   });
 });
