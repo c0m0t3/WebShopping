@@ -131,5 +131,30 @@ export class Routes {
         this.ShoppingListsController,
       ),
     )
+    //Store Routes
+    this.router.get(
+      '/shoppingLists/store/store',
+      this.ShoppingListsController.getShoppingListsByStore.bind(this.ShoppingListsController),
+    );
+
+    this.router.get(
+      '/shoppingLists/:id/store',
+      this.ShoppingListsController.getShoppingListStore.bind(
+        this.ShoppingListsController,
+      ),
+    )
+
+    this.router.put(
+      '/shoppingLists/:id/store',
+      this.ShoppingListsController.setShoppingListStore.bind(
+        this.ShoppingListsController,
+      ),
+    )
+
+    // Barcode
+    this.router.get(
+      '/products/lookup',
+      this.ShoppingListsController.lookupProductByBarcode.bind(this.ShoppingListsController),
+    );
   }
 }

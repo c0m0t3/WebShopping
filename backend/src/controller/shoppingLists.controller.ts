@@ -247,4 +247,69 @@ export class ShoppingListsController {
 
     res.status(200).send(results);
   }
+
+  async getShoppingListStore(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
+    const { id } = req.params;
+    const shoppingList = await this.shoppingListsRepository.getShoppingListStore(id);
+    if (shoppingList === null) {
+      res.status(404).send({ error: 'ShoppingList not found' });
+      return;
+    }
+    res.status(200).send(shoppingList);
+  }
+
+  async setShoppingListStore(req: Request, res: Response): Promise<void> {
+    if(!isUUID(req.params.id)) {
+      res.status(400).send({ error: 'Invalid UUID' });
+      return;
+    }
+    const { id } = req.params;
+    const { store } = req.body;
+    const result = await this.shoppingListsRepository.setShoppingListStore(id, store);
+    if (result === null) {
+      res.status(404).send({ error: 'ShoppingList not found' });
+      return;
+    }
+    res.status(200).send();
+  }
+
+  async getShoppingListsByStore(req: Request, res: Response): Promise<void> {
+    const { store } = req.query;
+    if (typeof store !== 'string') {
+      res.status(400).send({ error: 'Store query parameter is required and must be a string' });
+      return;
+    } else if(store.trim() === '') { // Check if store is empty and return an empty array
+      res.status(200).send([]);
+      return;
+    }
+
+    const results = await this.shoppingListsRepository.getShoppingListsByStore(store);
+    res.send(results);
+  }
+
+  async lookupProductByBarcode(req: Request, res: Response): Promise<void> {
+    const { barcode } = req.query;
+    if (typeof barcode !== 'string') {
+      res.status(400).send({ error: 'Barcode query parameter is required and must be a string' });
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+      const data = await response.json();
+
+      if (data.status === 1) {
+        res.status(200).send(data.product);
+      } else {
+        res.status(404).send({ error: 'Product not found' });
+      }
+    } catch (error) {
+      console.error('Error fetching product by barcode:', error);
+      res.status(500).send({ error: 'Internal server error' });
+    }
+  }
 }

@@ -21,10 +21,12 @@ export const createUserZodSchema = createInsertSchema(user, {
 export const createShoppingListZodSchema = createInsertSchema(shoppingLists, {
   name: z.string().min(1),
   description: z.string().optional(),
+  store: z.string().optional(),
 })
   .pick({
     name: true,
     description: true,
+    store: true,
   })
   .extend({
     items: z
@@ -46,6 +48,7 @@ export const createShoppingListZodSchema = createInsertSchema(shoppingLists, {
 export const updateShoppingListZodSchema = z.object({
   name: z.string().min(1),
   description: z.string().optional(),
+  store: z.string().optional(),
 }).strict();
 
 export const createItemZodSchema = createInsertSchema(items, {
@@ -68,4 +71,5 @@ export const loginZodSchema = z.object({
 });
 
 export type CreateItem = z.infer<typeof createItemZodSchema>;
+export type CreateShoppingList = z.infer<typeof createShoppingListZodSchema>;
 export type CreateUser = z.infer<typeof createUserZodSchema>;

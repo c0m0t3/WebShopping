@@ -73,6 +73,7 @@ describe('ShoppingListsController', () => {
           description: "",
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
+          store: "",
         },
         {
           id: expect.any(String),
@@ -80,6 +81,7 @@ describe('ShoppingListsController', () => {
           description: "",
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
+          store: "",
         },
       ]);
     });
@@ -98,6 +100,7 @@ describe('ShoppingListsController', () => {
         description: "",
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
+        store: "",
       });
     });
 
@@ -122,6 +125,7 @@ describe('ShoppingListsController', () => {
         id: expect.any(String),
         name: 'Test Shopping List 3',
         description: "",
+        store: "",
       });
     });
 

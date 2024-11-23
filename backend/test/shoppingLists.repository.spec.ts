@@ -11,10 +11,10 @@ describe('ShoppingListRepository Integration Tests', () => {
 
     // Insert test data into the shopping_lists table using createShoppingLists method
     await repository.createShoppingList(
-      { name: 'Test Shopping List 1', description: 'Description for Test Shopping List 1' }
+      { name: 'Test Shopping List 1', description: 'Description for Test Shopping List 1', store: 'Store 1' }
     );
     await repository.createShoppingList(
-      { name: 'Test Shopping List 2', description: 'Description for Test Shopping List 2' }
+      { name: 'Test Shopping List 2', description: 'Description for Test Shopping List 2', store: 'Store 2' }
     );
   });
 
@@ -30,6 +30,7 @@ describe('ShoppingListRepository Integration Tests', () => {
         id: test_id,
         name: 'Test Shopping List 1',
         description: 'Description for Test Shopping List 1',
+        store: 'Store 1',
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
       });
@@ -50,6 +51,7 @@ describe('ShoppingListRepository Integration Tests', () => {
           id: expect.any(String),
           name: 'Test Shopping List 1',
           description: 'Description for Test Shopping List 1',
+          store: 'Store 1',
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
         },
@@ -57,6 +59,7 @@ describe('ShoppingListRepository Integration Tests', () => {
           id: expect.any(String),
           name: 'Test Shopping List 2',
           description: 'Description for Test Shopping List 2',
+          store: 'Store 2',
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
         },
@@ -67,20 +70,21 @@ describe('ShoppingListRepository Integration Tests', () => {
   describe('createShoppingLists', () => {
     it('should create new shopping lists', async () => {
       const newShoppingLists =
-        { name: 'Test Shopping List 3', description: 'Description for Test Shopping List 3' };
+        { name: 'Test Shopping List 3', description: 'Description for Test Shopping List 3', store: 'Store 3' };
       const createdShoppingLists = await repository.createShoppingList(newShoppingLists);
       expect(createdShoppingLists).toEqual(
         {
           id: expect.any(String),
           name: 'Test Shopping List 3',
           description: 'Description for Test Shopping List 3',
+          store: 'Store 3',
         }
       );
     });
 
     it('should not create shopping lists that already exist', async () => {
       const newShoppingLists =
-        { name: 'Test Shopping List 1', description: 'Description for Test Shopping List 1' };
+        { name: 'Test Shopping List 1', description: 'Description for Test Shopping List 1', store: 'Store 1' };
       const createdShoppingLists = await repository.createShoppingList(newShoppingLists);
       expect(createdShoppingLists).toBeNull();
     });
@@ -107,6 +111,7 @@ describe('ShoppingListRepository Integration Tests', () => {
       const updatedShoppingList = await repository.updateShoppingList(test_id, {
         name: 'Updated Test Shopping List 1',
         description: 'Updated Description for Test Shopping List 1',
+        store: 'Updated Store 1',
       });
       if(updatedShoppingList) {
         expect(updatedShoppingList.rowCount).toBe(1);
@@ -117,6 +122,7 @@ describe('ShoppingListRepository Integration Tests', () => {
       const updatedShoppingList = await repository.updateShoppingList("cc2e9609-4d06-42e5-bc2a-1a81789740b7", {
         name: 'Updated Test Shopping List',
         description: 'Updated Description for Test Shopping List',
+        store: 'Updated Store',
       });
       expect(updatedShoppingList).toBeNull();
     });

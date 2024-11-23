@@ -1,5 +1,5 @@
 import type { Database } from '..';
-import { CreateItem } from '../../validation/validation';
+import { CreateShoppingList } from '../../validation/validation';
 import { shoppingLists } from '../schema/shoppingLists.schema';
 import { shoppingListItems } from '../schema/shoppingListItems.schema';
 import { eq, and, } from 'drizzle-orm';
@@ -49,14 +49,14 @@ export class ShoppingListsRepository {
    //   throw new Error("Error fetching shopping lists");
    // }
   }
-  async createShoppingList(data: CreateItem) {
+  async createShoppingList(data: CreateShoppingList) {
     // Check if the shopping list already exists by name
     const existingShoppingList = await this.database.query.shoppingLists.findFirst({
       where: (shoppingLists, { eq }) => eq(shoppingLists.name, data.name),
     });
 
     if (existingShoppingList) {
-      return null; // or handle it as needed
+      return null;
     }
 
     const [createdShoppingList] = await this.database
@@ -64,11 +64,13 @@ export class ShoppingListsRepository {
       .values({
         ...data,
         description: data.description ?? '', // Provide a default value if description is undefined
+        store: data.store ?? '', // Provide a default value if store is undefined
       })
       .returning({
         id: shoppingLists.id,
         name: shoppingLists.name,
         description: shoppingLists.description,
+        store: shoppingLists.store,
       });
 
     return createdShoppingList;
@@ -79,12 +81,13 @@ export class ShoppingListsRepository {
     return result.rowCount ?? 0; // Provide a default value of 0 if rowCount is null
   }
 
-  async updateShoppingList(id: string, data: CreateItem) {
+  async updateShoppingList(id: string, data: CreateShoppingList) {
     const result = await this.database
       .update(shoppingLists)
       .set({
         ...data,
         description: data.description ?? '', // Provide a default value if description is null or undefined
+        store: data.store ?? '', // Provide a default value if store is null or undefined
       })
       .where(eq(shoppingLists.id, id));
 
@@ -174,5 +177,32 @@ export class ShoppingListsRepository {
       where: (items, { eq }) => eq(items.itemId, itemId),
     });
   }
+
+  async getShoppingListStore(id: string) {
+    const shoppingList = await this.database.query.shoppingLists.findFirst({
+      where: (shoppingLists, { eq }) => eq(shoppingLists.id, id),
+    });
+    return shoppingList?.store;
+  }
+
+  async setShoppingListStore(id: string, store: string) {
+    const result = await this.database
+      .update(shoppingLists)
+      .set({
+        store,
+      })
+      .where(eq(shoppingLists.id, id));
+
+    return (result.rowCount ?? 0) > 0 ? result : null;
+  }
+
+  async getShoppingListsByStore(store: string) {
+    return this.database.query.shoppingLists.findMany({
+      where: (shoppingLists, { like }) => like(shoppingLists.store, `%${store}%`),
+    });
+  }
+
+
+
 
 }
