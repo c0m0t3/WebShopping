@@ -1,19 +1,13 @@
-import { useFetchApi } from "./useFetchApi.ts";
+import { ChakraProvider, defaultSystem } from "@chakra-ui/react";
+import { BrowserRouter } from "react-router-dom";
+import { AppRoutes } from "./Routes.tsx";
 
 export const App = () => {
-    const { inputValue, setInputValue, apiData } = useFetchApi();
-    return (
-        <>
-            <input
-                value={inputValue ?? ""}
-                onChange={(e) => {
-                    setInputValue(Number(e.target.value));
-                }}
-            />
-            <div>{inputValue === null ? "Kein Input" : `Input: ${inputValue}`}</div>
-            <pre>{JSON.stringify(apiData, null, 2)}</pre>
-        </>
-    );
+  return (
+    <ChakraProvider value={defaultSystem}>
+      <BrowserRouter>
+        <AppRoutes />
+      </BrowserRouter>
+    </ChakraProvider>
+  );
 };
-
-export default App;
