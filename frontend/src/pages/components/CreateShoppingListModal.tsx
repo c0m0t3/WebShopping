@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { Form, Formik, FormikHelpers } from "formik";
 import { InputControl, SubmitButton, TextareaControl } from "formik-chakra-ui";
-import { ShoppingList } from "../../adapter/api/__generated";
+import { Item, ShoppingList } from "../../adapter/api/__generated";
 import ReactSelectControl from "../../components/ReactSelectControl";
 import { GroupBase } from "react-select";
 import { useApiClient } from "../../adapter/api/useApiClient";
@@ -70,10 +70,10 @@ export const CreateShoppingListModal = ({
                   isMulti: true,
                   defaultOptions: true,
                   loadOptions: async () => {
-                    const response = await client.getShoppingLists();
+                    const response = await client.getItems();
                     console.log(response);
                     if (response && response.status === 200) {
-                      return response.data.map((item: ShoppingList) => ({
+                      return response.data.map((item: Item) => ({
                         id: item.id,
                         label: item.name ?? "",
                         value: item.name ?? "",

@@ -1,4 +1,5 @@
 import { Navigate, Route, RouteProps, Routes } from "react-router-dom";
+import { HomePage } from "./pages/Homepage.tsx";
 
 export type RouteConfig = RouteProps & {
   /**
@@ -13,6 +14,11 @@ export const appRoutes: RouteConfig[] = [
     path: "/",
     element: <Navigate to="/home" replace />,
     index: true,
+  },
+  {
+    isPrivate: true,
+    path: "/home",
+    element: <HomePage />,
   },
 ];
 
