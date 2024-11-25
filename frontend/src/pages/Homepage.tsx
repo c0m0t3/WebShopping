@@ -5,26 +5,32 @@ import { useCallback, useEffect, useState } from "react";
 import { CreateShoppingListModal } from "./components/CreateShoppingListModal.tsx";
 import { ShoppingList } from "../adapter/api/__generated";
 import { ShoppingListTable } from "./components/ShoppingListEntryTable.tsx";
+import { useNavigate } from "react-router-dom";
 
 export const HomePage = () => {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
+  const { isOpen, onOpen, onClose: originalOnClose } = useDisclosure();
   const client = useApiClient();
   const [lists, setLists] = useState<ShoppingList[]>([]);
+  const [listToBeUpdated, setListToBeUpdated] = useState<ShoppingList | null>(
+    null,
+  );
+  const navigate = useNavigate();
+
   const onLoadData = useCallback(async () => {
     const res = await client.getShoppingLists();
     if (res && res.data) {
       setLists(res.data);
     }
   }, [client]);
+
   useEffect(() => {
     onLoadData();
   }, [onLoadData]);
+
   const onCreateList = async (data: any) => {
-    console.log(data);
     await client.createShoppingList(data);
     await onLoadData();
-    onClose();
+    originalOnClose();
   };
 
   const onDeleteShoppingList = async (list: ShoppingList) => {
@@ -33,10 +39,6 @@ export const HomePage = () => {
     setListToBeUpdated(null);
   };
 
-  const [listToBeUpdated, setListToBeUpdated] = useState<ShoppingList | null>(
-    null,
-  );
-
   const onClickUpdateShoppingList = async (list: ShoppingList) => {
     setListToBeUpdated(list);
     onOpen();
@@ -44,11 +46,21 @@ export const HomePage = () => {
 
   const onUpdateShoppingList = async (list: any) => {
     if (listToBeUpdated?.id) {
-      await client.updateShoppingList(listToBeUpdated.id, list);
+      const { id, createdAt, updatedAt, items, ...updateData } = list;
+      await client.updateShoppingList(listToBeUpdated.id, updateData);
     }
     await onLoadData();
-    onClose();
+    originalOnClose();
     setListToBeUpdated(null);
+  };
+
+  const onClose = () => {
+    setListToBeUpdated(null);
+    originalOnClose();
+  };
+
+  const onClickViewDetails = (list: ShoppingList) => {
+    navigate(`/detailview/${list.id}`);
   };
 
   return (
@@ -91,6 +103,7 @@ export const HomePage = () => {
           data={lists}
           onClickDeleteList={onDeleteShoppingList}
           onClickUpdateList={onClickUpdateShoppingList}
+          onClickViewDetails={onClickViewDetails}
         />
       </Box>
     </BaseLayout>

@@ -11,10 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { Form, Formik, FormikHelpers } from "formik";
 import { InputControl, SubmitButton, TextareaControl } from "formik-chakra-ui";
-import { Item, ShoppingList } from "../../adapter/api/__generated";
-import ReactSelectControl from "../../components/ReactSelectControl";
-import { GroupBase } from "react-select";
-import { useApiClient } from "../../adapter/api/useApiClient";
+import { ShoppingList } from "../../adapter/api/__generated";
 import { OptionBase } from "chakra-react-select";
 
 interface ItemOption extends OptionBase {
@@ -36,8 +33,6 @@ export const CreateShoppingListModal = ({
   initialValues: List | null;
   onSubmit?: (data: List) => void;
 }) => {
-  const client = useApiClient();
-
   return (
     <Modal {...restProps}>
       <ModalOverlay />
@@ -63,31 +58,11 @@ export const CreateShoppingListModal = ({
               <InputControl name="name" label="Name" />
               <TextareaControl name="description" label="Beschreibung" />
               <InputControl name="store" label="Geschäft" />
-              <ReactSelectControl<ItemOption, true, GroupBase<ItemOption>>
-                name="items"
-                label="Artikel"
-                selectProps={{
-                  isMulti: true,
-                  defaultOptions: true,
-                  loadOptions: async () => {
-                    const response = await client.getItems();
-                    console.log(response);
-                    if (response && response.status === 200) {
-                      return response.data.map((item: Item) => ({
-                        id: item.id,
-                        label: item.name ?? "",
-                        value: item.name ?? "",
-                      }));
-                    }
-                    return [];
-                  },
-                }}
-              />
             </VStack>
           </ModalBody>
           <ModalFooter>
             <SubmitButton>
-              {initialValues ? "Liste bearbeiten" : "Liste erstellen"}
+              {initialValues ? "speichern" : "Liste erstellen"}
             </SubmitButton>
           </ModalFooter>
         </ModalContent>

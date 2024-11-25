@@ -327,6 +327,8 @@ components:
           type: string
         description:
           type: string
+        store:
+          type: string
     Item:
       type: object
       properties:

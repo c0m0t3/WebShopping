@@ -1,5 +1,11 @@
-import { Box, Button, chakra, HStack } from "@chakra-ui/react";
-import { useColorMode, useColorModeValue } from "@chakra-ui/color-mode";
+import {
+  Box,
+  Button,
+  chakra,
+  HStack,
+  useColorMode,
+  useColorModeValue,
+} from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { MouseEventHandler } from "react";
 
