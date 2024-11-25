@@ -1,6 +1,4 @@
 import { Navigate, Route, RouteProps, Routes } from "react-router-dom";
-// Ensure the correct path to HomePage
-import { ShoppingListsView } from "./pages/ListView";
 
 export type RouteConfig = RouteProps & {
   /**
@@ -10,28 +8,18 @@ export type RouteConfig = RouteProps & {
   isPrivate?: boolean;
 };
 
-export const routes: RouteConfig[] = [
+export const appRoutes: RouteConfig[] = [
   {
-    isPrivate: true,
     path: "/",
     element: <Navigate to="/home" replace />,
     index: true,
   },
-  {
-    isPrivate: true,
-    path: "/home",
-    element: <ShoppingListsView />,
-  },
 ];
 
-export function renderRouteMap({
-  isPrivate,
-  element,
-  ...restRoute
-}: RouteConfig) {
+export function renderRouteMap({ element, ...restRoute }: RouteConfig) {
   return <Route key={restRoute.path} {...restRoute} element={element} />;
 }
 
 export const AppRoutes = () => {
-  return <Routes>{routes.map(renderRouteMap)}</Routes>;
+  return <Routes>{appRoutes.map(renderRouteMap)}</Routes>;
 };

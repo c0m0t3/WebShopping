@@ -1,0 +1,346 @@
+openapi: 3.0.0
+info:
+  title: Shopping List API
+  version: 1.0.1
+
+servers:
+  - url: http://localhost:3000
+    description: Local server
+
+paths:
+  /api/shoppingLists:
+    get:
+      summary: Liste aller Einkaufslisten abrufen
+      operationId: getShoppingLists
+      responses:
+        '200':
+          description: Erfolgreiche Antwort mit allen Einkaufslisten
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShoppingList'
+        '500':
+          description: Serverfehler
+    post:
+      summary: Neue Einkaufsliste erstellen
+      operationId: createShoppingList
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateShoppingListRequest'
+      responses:
+        '201':
+          description: Einkaufsliste erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingList'
+        '400':
+          description: Ungültige Anfrage
+
+  /api/shoppingLists/{id}:
+    get:
+      summary: Einkaufsliste nach ID abrufen
+      operationId: getShoppingListById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Details der Einkaufsliste
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingList'
+        '404':
+          description: Einkaufsliste nicht gefunden
+    put:
+      summary: Einkaufsliste aktualisieren
+      operationId: updateShoppingList
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateShoppingListRequest'
+      responses:
+        '200':
+          description: Einkaufsliste erfolgreich aktualisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShoppingList'
+        '400':
+          description: Ungültige Anfrage
+        '404':
+          description: Einkaufsliste nicht gefunden
+    delete:
+      summary: Einkaufsliste löschen
+      operationId: deleteShoppingList
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Einkaufsliste erfolgreich gelöscht
+        '404':
+          description: Einkaufsliste nicht gefunden
+
+  /api/shoppingLists/search:
+    get:
+      summary: Einkaufslisten durchsuchen
+      operationId: searchShoppingLists
+      parameters:
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Übereinstimmende Einkaufslisten
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShoppingList'
+        '400':
+          description: Ungültige Anfrage
+
+  /api/items:
+    get:
+      summary: Alle Artikel abrufen
+      operationId: getItems
+      responses:
+        '200':
+          description: Liste aller Artikel
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '500':
+          description: Serverfehler
+    post:
+      summary: Neuen Artikel erstellen
+      operationId: createItem
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateItemRequest'
+      responses:
+        '201':
+          description: Artikel erfolgreich erstellt
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Ungültige Anfrage
+
+  /api/items/{id}:
+    get:
+      summary: Artikel nach ID abrufen
+      operationId: getItemById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Details des Artikels
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: Artikel nicht gefunden
+    put:
+      summary: Artikel aktualisieren
+      operationId: updateItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '200':
+          description: Artikel erfolgreich aktualisiert
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: Ungültige Anfrage
+        '404':
+          description: Artikel nicht gefunden
+    delete:
+      summary: Artikel löschen
+      operationId: deleteItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Artikel erfolgreich gelöscht
+        '404':
+          description: Artikel nicht gefunden
+
+  /api/items/{id}/shoppingLists:
+    get:
+      summary: Einkaufslisten für einen Artikel abrufen
+      operationId: getShoppingListsForItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liste der Einkaufslisten, die den Artikel enthalten
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShoppingList'
+        '404':
+          description: Artikel nicht gefunden
+    post:
+      summary: Artikel zu einer Einkaufsliste hinzufügen
+      operationId: addItemToShoppingList
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                shoppingListId:
+                  type: string
+      responses:
+        '201':
+          description: Artikel erfolgreich zur Einkaufsliste hinzugefügt
+        '400':
+          description: Ungültige Anfrage
+        '404':
+          description: Artikel oder Einkaufsliste nicht gefunden
+    delete:
+      summary: Artikel aus einer Einkaufsliste entfernen
+      operationId: removeItemFromShoppingList
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: shoppingListId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Artikel erfolgreich aus der Einkaufsliste entfernt
+        '404':
+          description: Artikel oder Einkaufsliste nicht gefunden
+
+components:
+  schemas:
+    ShoppingList:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Eindeutige ID der Einkaufsliste
+        name:
+          type: string
+          description: Name der Einkaufsliste
+        description:
+          type: string
+          description: Beschreibung der Einkaufsliste
+        store:
+          type: string
+          description: Geschäft, in dem die Einkäufe getätigt werden
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Item'
+      required:
+        - id
+        - name
+    CreateShoppingListRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name der neuen Einkaufsliste
+        description:
+          type: string
+          description: Beschreibung der Einkaufsliste
+      required:
+        - name
+    UpdateShoppingListRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+    Item:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+    CreateItemRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string

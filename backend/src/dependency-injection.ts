@@ -66,10 +66,13 @@ export function initializeDependencyInjection(): void {
     ),
     health: new HealthController(), //todo hier auch die anderen Controller hinzufügen
     items: new ItemsController(DI.repositories.items),
-    shoppingLists: new ShoppingListsController(DI.repositories.shoppingLists, DI.repositories.items),
+    shoppingLists: new ShoppingListsController(
+      DI.repositories.shoppingLists,
+      DI.repositories.items,
+    ),
   };
 
-  // Initialize routes
+  // Initialize appRoutes
   DI.routes = new Routes(
     DI.controllers.auth,
     DI.controllers.health,

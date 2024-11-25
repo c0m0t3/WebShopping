@@ -32,12 +32,12 @@ export class Routes {
       '/auth/login',
       this.authController.loginUser.bind(this.authController),
     );
-    // Health routes
+    // Health appRoutes
     this.router.get(
       '/health',
       this.healthController.getHealthStatus.bind(this.healthController),
     );
-    // Items routes
+    // Items appRoutes
     this.router.get(
       '/items/:id',
       this.itemsController.getItemById.bind(this.itemsController),
@@ -58,7 +58,7 @@ export class Routes {
       '/items/:id',
       this.itemsController.updateItem.bind(this.itemsController),
     );
-    // ShoppingLists routes
+    // ShoppingLists appRoutes
     this.router.get(
       '/shoppingLists/:id',
       this.ShoppingListsController.getShoppingListById.bind(
@@ -70,7 +70,7 @@ export class Routes {
       this.ShoppingListsController.getShoppingLists.bind(
         this.ShoppingListsController,
       ),
-    )
+    );
     this.router.post(
       '/shoppingLists',
       this.ShoppingListsController.createShoppingList.bind(
@@ -89,7 +89,7 @@ export class Routes {
         this.ShoppingListsController,
       ),
     );
-  // ShoppingLists items routes
+    // ShoppingLists items appRoutes
     this.router.post(
       '/shoppingLists/:id/items',
       this.ShoppingListsController.associateItemsWithShoppingList.bind(
@@ -116,7 +116,7 @@ export class Routes {
       this.ShoppingListsController.updateShoppingListItems.bind(
         this.ShoppingListsController,
       ),
-    )
+    );
 
     // Special Routes
     this.router.get(
@@ -124,17 +124,19 @@ export class Routes {
       this.ShoppingListsController.searchShoppingLists.bind(
         this.ShoppingListsController,
       ),
-    )
+    );
     this.router.get(
       '/shoppingLists/search/:id',
       this.ShoppingListsController.searchShoppingListsByItem.bind(
         this.ShoppingListsController,
       ),
-    )
+    );
     //Store Routes
     this.router.get(
       '/shoppingLists/store/store',
-      this.ShoppingListsController.getShoppingListsByStore.bind(this.ShoppingListsController),
+      this.ShoppingListsController.getShoppingListsByStore.bind(
+        this.ShoppingListsController,
+      ),
     );
 
     this.router.get(
@@ -142,19 +144,21 @@ export class Routes {
       this.ShoppingListsController.getShoppingListStore.bind(
         this.ShoppingListsController,
       ),
-    )
+    );
 
     this.router.put(
       '/shoppingLists/:id/store',
       this.ShoppingListsController.setShoppingListStore.bind(
         this.ShoppingListsController,
       ),
-    )
+    );
 
     // Barcode
     this.router.get(
       '/products/lookup',
-      this.ShoppingListsController.lookupProductByBarcode.bind(this.ShoppingListsController),
+      this.ShoppingListsController.lookupProductByBarcode.bind(
+        this.ShoppingListsController,
+      ),
     );
   }
 }

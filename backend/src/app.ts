@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import { globalErrorHandler } from './utils/global-error';
 import { Routes } from './routes/routes';
 import helmet from 'helmet';
+import cors from 'cors';
 import { prepareAuthentication } from './middleware/auth.middleware'; //todo prüfen
 
 export class App {
@@ -20,6 +21,7 @@ export class App {
 
   private _registerMiddlewares() {
     this.app.use(helmet());
+    this.app.use(cors({ origin: 'http://localhost:5173' }));
     this.app.use(express.json());
     this.app.use(prepareAuthentication);
 
