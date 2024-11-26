@@ -115,7 +115,7 @@ const DetailView: React.FC = () => {
       if (addedItem) {
         setItems((prevItems) => [
           ...prevItems,
-          { ...addedItem, isPurchased: false },
+          { ...addedItem, quantity: 1, isPurchased: false },
         ]);
       }
     } catch (err) {

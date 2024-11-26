@@ -64,6 +64,10 @@ export const ItemsEntryTable: React.FC<ItemsEntryTableProps> = ({
     }
   };
 
+  const availableItems = allItems.filter(
+    (item) => !items.some((listItem) => listItem.id === item.id),
+  );
+
   return (
     <>
       <Table>
@@ -172,7 +176,7 @@ export const ItemsEntryTable: React.FC<ItemsEntryTableProps> = ({
               placeholder="Select item"
               onChange={(e) => setSelectedItemId(e.target.value)}
             >
-              {allItems.map((item) => (
+              {availableItems.map((item) => (
                 <option key={item.id} value={item.id}>
                   {item.name}
                 </option>
