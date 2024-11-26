@@ -37,8 +37,11 @@ const DetailView: React.FC = () => {
               throw new Error("Item ID is missing");
             }
             const itemResponse = await client.getItemById(item.itemId); // Fetches item details
-            return { ...item, ...itemResponse.data } as Item &
-              ItemToShoppingList;
+            return {
+              ...item,
+              ...itemResponse.data,
+              is_purchased: item.is_purchased,
+            } as Item & ItemToShoppingList;
           }),
         );
         setItems(itemDetails);

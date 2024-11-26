@@ -393,7 +393,7 @@ components:
       properties:
         quantity:
           type: number
-        isPurchased:
+        is_purchased:
           type: boolean
     ItemOutShoppingList:
       type: object

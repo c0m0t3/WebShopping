@@ -85,17 +85,17 @@ export const ItemsEntryTable: React.FC<ItemsEntryTableProps> = ({
             )}
             {showDetails && (
               <Td>
-                {item.isPurchased ? "Yes" : "No"}
+                {item.is_purchased ? "Yes" : "No"}
                 <IconButton
                   aria-label={
-                    item.isPurchased
+                    item.is_purchased
                       ? "Unmark as purchased"
                       : "Mark as purchased"
                   }
-                  icon={item.isPurchased ? <CloseIcon /> : <CheckIcon />}
+                  icon={item.is_purchased ? <CloseIcon /> : <CheckIcon />}
                   size="sm"
                   onClick={() =>
-                    handleUpdate(item.id, { isPurchased: !item.isPurchased })
+                    handleUpdate(item.id, { is_purchased: !item.is_purchased })
                   }
                   ml="2"
                 />
