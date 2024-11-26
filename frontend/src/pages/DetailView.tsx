@@ -5,9 +5,11 @@ import {
   Item,
   ItemOutShoppingList,
   ItemToShoppingList,
+  ShoppingList,
 } from "../adapter/api/__generated";
 import { ItemsEntryTable } from "./components/ItemsEntryTable";
 import { BaseLayout } from "../layout/BaseLayout.tsx";
+import { Box, Heading, Text } from "@chakra-ui/react";
 
 const DetailView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -15,12 +17,22 @@ const DetailView: React.FC = () => {
     return <div>There is no ID</div>;
   }
   const client = useApiClient();
+  const [shoppingList, setShoppingList] = useState<ShoppingList | null>(null);
   const [items, setItems] = useState<(Item & ItemToShoppingList)[]>([]);
   const [allItems, setAllItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    const fetchShoppingList = async () => {
+      try {
+        const response = await client.getShoppingListById(id);
+        setShoppingList(response.data);
+      } catch (err) {
+        setError("Failed to fetch shopping list");
+      }
+    };
+
     const fetchItems = async () => {
       if (!id) {
         setError("Invalid shopping list ID");
@@ -62,6 +74,7 @@ const DetailView: React.FC = () => {
       }
     };
 
+    fetchShoppingList();
     fetchItems();
     fetchAllItems();
   }, [id, client]);
@@ -133,6 +146,19 @@ const DetailView: React.FC = () => {
 
   return (
     <BaseLayout>
+      {shoppingList && (
+        <Box mb={4} p={4} borderWidth={1} borderRadius="md" boxShadow="md">
+          <Heading as="h1" size="lg" mb={2}>
+            {shoppingList.name}
+          </Heading>
+          <Text fontSize="md" color="gray.600">
+            {shoppingList.store}
+          </Text>
+          <Text fontSize="md" color="gray.600">
+            {shoppingList.description}
+          </Text>
+        </Box>
+      )}
       <ItemsEntryTable
         items={items}
         allItems={allItems}
