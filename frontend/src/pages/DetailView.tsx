@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useApiClient } from "../adapter/api/useApiClient";
-import { Item, ItemToShoppingList } from "../adapter/api/__generated";
+import {
+  Item,
+  ItemOutShoppingList,
+  ItemToShoppingList,
+} from "../adapter/api/__generated";
+import { ItemsEntryTable } from "./components/ItemsEntryTable";
+import { BaseLayout } from "../layout/BaseLayout.tsx";
 
-export const DetailView: React.FC = () => {
+const DetailView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  if (!id) {
+    return <div>There is no ID</div>;
+  }
   const client = useApiClient();
   const [items, setItems] = useState<(Item & ItemToShoppingList)[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -12,32 +21,58 @@ export const DetailView: React.FC = () => {
 
   useEffect(() => {
     const fetchItems = async () => {
-      if (id) {
-        try {
-          const response = await client.getItemsForShoppingList(id); // Fetches relation
-          const itemDetails = await Promise.all(
-            (response.data as ItemToShoppingList[]).map(
-              async (item: ItemToShoppingList) => {
-                const itemResponse = await client.getItemById(item.itemId); // Fetches item details
-                return { ...item, ...itemResponse.data } as Item &
-                  ItemToShoppingList;
-              },
-            ),
-          );
-          setItems(itemDetails);
-        } catch (err) {
-          setError("Failed to fetch items");
-        } finally {
-          setLoading(false);
-        }
-      } else {
+      if (!id) {
         setError("Invalid shopping list ID");
+        setLoading(false);
+        return;
+      }
+      try {
+        const response = await client.getItemsForShoppingList(id); // Fetches relation
+        if (!response.data || !Array.isArray(response.data)) {
+          throw new Error("Invalid response data");
+        }
+        const itemDetails = await Promise.all(
+          (response.data as ItemOutShoppingList[]).map(async (item) => {
+            if (!item.itemId) {
+              throw new Error("Item ID is missing");
+            }
+            const itemResponse = await client.getItemById(item.itemId); // Fetches item details
+            return { ...item, ...itemResponse.data } as Item &
+              ItemToShoppingList;
+          }),
+        );
+        setItems(itemDetails);
+      } catch (err) {
+        setError("Failed to fetch items");
+      } finally {
         setLoading(false);
       }
     };
 
     fetchItems();
   }, [id, client]);
+
+  const handleUpdate = async (
+    itemId: string,
+    changes: Partial<ItemToShoppingList>,
+  ) => {
+    const item = items.find((item) => item.id === itemId);
+    if (item) {
+      const updatedItem = { ...item, ...changes };
+      try {
+        console.log("Updating item", updatedItem);
+        await client.updateItemInShoppingList(id, itemId, {
+          is_purchased: updatedItem.is_purchased,
+          quantity: updatedItem.quantity,
+        });
+        setItems((prevItems) =>
+          prevItems.map((i) => (i.id === itemId ? updatedItem : i)),
+        );
+      } catch (err) {
+        setError("Failed to update item");
+      }
+    }
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -48,20 +83,13 @@ export const DetailView: React.FC = () => {
   }
 
   return (
-    <div>
-      <h1>Items in Shopping List</h1>
-      <ul>
-        {items.map((item) => (
-          <li key={item.itemId}>
-            <p>Item ID: {item.itemId}</p>
-            <p>Name: {item.name}</p>
-            <p>Description: {item.description}</p>
-            <p>Quantity: {item.quantity}</p>
-            <p>Purchased: {item.isPurchased ? "Yes" : "No"}</p>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <BaseLayout>
+      <ItemsEntryTable
+        items={items}
+        showDetails={true}
+        onUpdate={handleUpdate}
+      />
+    </BaseLayout>
   );
 };
 

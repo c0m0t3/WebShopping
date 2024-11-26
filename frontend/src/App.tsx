@@ -1,14 +1,10 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { HomePage } from "./pages/Homepage";
-import { DetailView } from "./pages/DetailView";
+import { BrowserRouter as Router } from "react-router-dom";
+import { AppRoutes } from "./AppRoutes";
 
 const App = () => {
   return (
     <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/detail/:id" element={<DetailView />} />
-      </Routes>
+      <AppRoutes />
     </Router>
   );
 };
