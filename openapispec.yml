@@ -122,6 +122,27 @@ paths:
                   $ref: '#/components/schemas/Item'
         '404':
           description: Einkaufsliste nicht gefunden
+    post:
+      operationId: addItemToShoppingList
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostItemToList'
+      responses:
+        '201':
+          description: Artikel erfolgreich zur Einkaufsliste hinzugefügt
+        '400':
+          description: Ungültige Anfrage
+        '404':
+          description: Artikel oder Einkaufsliste nicht gefunden
   /api/shoppingLists/{id}/items/{itemId}:
     put:
       summary: Artikel in einer Einkaufsliste aktualisieren
@@ -432,3 +453,19 @@ components:
           type: string
         description:
           type: string
+    PostItemToList:
+      type: object
+      properties:
+        shoppingListId:
+          type: string
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              itemId:
+                type: string
+              quantity:
+                type: number
+              is_purchased:
+                type: boolean

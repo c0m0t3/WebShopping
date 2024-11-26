@@ -16,6 +16,7 @@ const DetailView: React.FC = () => {
   }
   const client = useApiClient();
   const [items, setItems] = useState<(Item & ItemToShoppingList)[]>([]);
+  const [allItems, setAllItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,7 +41,7 @@ const DetailView: React.FC = () => {
             return {
               ...item,
               ...itemResponse.data,
-              is_purchased: item.is_purchased,
+              isPurchased: item.is_purchased,
             } as Item & ItemToShoppingList;
           }),
         );
@@ -52,7 +53,17 @@ const DetailView: React.FC = () => {
       }
     };
 
+    const fetchAllItems = async () => {
+      try {
+        const response = await client.getItems();
+        setAllItems(response.data);
+      } catch (err) {
+        setError("Failed to fetch all items");
+      }
+    };
+
     fetchItems();
+    fetchAllItems();
   }, [id, client]);
 
   const handleUpdate = async (
@@ -86,6 +97,32 @@ const DetailView: React.FC = () => {
     }
   };
 
+  const handleAdd = async (selectedItemId: string) => {
+    if (!selectedItemId) {
+      setError("No item selected");
+      return;
+    }
+    try {
+      const itemsToAdd = [
+        {
+          itemId: selectedItemId,
+          quantity: 1,
+          is_purchased: false,
+        },
+      ];
+      await client.addItemToShoppingList(id, { items: itemsToAdd });
+      const addedItem = allItems.find((item) => item.id === selectedItemId);
+      if (addedItem) {
+        setItems((prevItems) => [
+          ...prevItems,
+          { ...addedItem, isPurchased: false },
+        ]);
+      }
+    } catch (err) {
+      setError("Failed to add item");
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -98,9 +135,11 @@ const DetailView: React.FC = () => {
     <BaseLayout>
       <ItemsEntryTable
         items={items}
+        allItems={allItems}
         showDetails={true}
         onUpdate={handleUpdate}
         onDelete={handleDelete}
+        onAdd={handleAdd}
       />
     </BaseLayout>
   );
