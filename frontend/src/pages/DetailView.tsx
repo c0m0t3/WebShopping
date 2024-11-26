@@ -77,6 +77,15 @@ const DetailView: React.FC = () => {
     }
   };
 
+  const handleDelete = async (itemId: string) => {
+    try {
+      await client.removeItemFromShoppingList(id, itemId);
+      setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+    } catch (err) {
+      setError("Failed to delete item");
+    }
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -91,6 +100,7 @@ const DetailView: React.FC = () => {
         items={items}
         showDetails={true}
         onUpdate={handleUpdate}
+        onDelete={handleDelete}
       />
     </BaseLayout>
   );

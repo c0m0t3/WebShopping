@@ -150,6 +150,25 @@ paths:
           description: Ungültige Anfrage
         '404':
           description: Artikel oder Einkaufsliste nicht gefunden
+    delete:
+      summary: Artikel aus einer Einkaufsliste entfernen
+      operationId: removeItemFromShoppingList
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Artikel erfolgreich aus der Einkaufsliste entfernt
+        '404':
+          description: Artikel oder Einkaufsliste nicht gefunden
 
   /api/shoppingLists/search:
     get:

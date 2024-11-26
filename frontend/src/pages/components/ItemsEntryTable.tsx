@@ -107,7 +107,11 @@ export const ItemsEntryTable: React.FC<ItemsEntryTableProps> = ({
                   aria-label="Delete item"
                   icon={<DeleteIcon />}
                   size="sm"
-                  onClick={() => onDelete && onDelete(item.id)}
+                  onClick={() => {
+                    if (item.id) {
+                      onDelete && onDelete(item.id);
+                    }
+                  }}
                 />
               </Td>
             )}
