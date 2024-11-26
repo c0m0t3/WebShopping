@@ -1,5 +1,6 @@
 import { Navigate, Route, RouteProps, Routes } from "react-router-dom";
 import { HomePage } from "./pages/Homepage.tsx";
+import DetailView from "./pages/DetailView.tsx";
 
 export type RouteConfig = RouteProps & {
   /**
@@ -19,6 +20,10 @@ export const appRoutes: RouteConfig[] = [
     isPrivate: true,
     path: "/home",
     element: <HomePage />,
+  },
+  {
+    path: "/detail/:id",
+    element: <DetailView />,
   },
 ];
 

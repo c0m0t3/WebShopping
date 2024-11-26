@@ -102,6 +102,27 @@ paths:
         '404':
           description: Einkaufsliste nicht gefunden
 
+  /api/shoppingLists/{id}/items:
+    get:
+      operationId: getItemsForShoppingList
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liste der Artikel in der Einkaufsliste
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '404':
+          description: Einkaufsliste nicht gefunden
+
   /api/shoppingLists/search:
     get:
       summary: Einkaufslisten durchsuchen
@@ -339,6 +360,20 @@ components:
           type: string
         description:
           type: string
+    ItemToShoppingList:
+      type: object
+      properties:
+        shoppingListId:
+          type: string
+        itemId:
+          type: string
+        quantity:
+          type: number
+        isPurchased:
+          type: boolean
+      required:
+        - shoppingListId
+        - itemId
     CreateItemRequest:
       type: object
       properties:

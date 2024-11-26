@@ -60,7 +60,7 @@ export const HomePage = () => {
   };
 
   const onClickViewDetails = (list: ShoppingList) => {
-    navigate(`/detailview/${list.id}`);
+    navigate(`/detail/${list.id}`);
   };
 
   return (
