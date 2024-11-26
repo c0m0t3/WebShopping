@@ -1,6 +1,6 @@
 import { useApiClient } from "../adapter/api/useApiClient.ts";
 import { BaseLayout } from "../layout/BaseLayout.tsx";
-import { Box, Button, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Input, useDisclosure } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { CreateShoppingListModal } from "./components/CreateShoppingListModal.tsx";
 import { ShoppingList } from "../adapter/api/__generated";
@@ -11,15 +11,19 @@ export const HomePage = () => {
   const { isOpen, onOpen, onClose: originalOnClose } = useDisclosure();
   const client = useApiClient();
   const [lists, setLists] = useState<ShoppingList[]>([]);
+  const [filteredLists, setFilteredLists] = useState<ShoppingList[]>([]);
   const [listToBeUpdated, setListToBeUpdated] = useState<ShoppingList | null>(
     null,
   );
+  const [searchName, setSearchName] = useState("");
+  const [searchItem, setSearchItem] = useState("");
   const navigate = useNavigate();
 
   const onLoadData = useCallback(async () => {
     const res = await client.getShoppingLists();
     if (res && res.data) {
       setLists(res.data);
+      setFilteredLists(res.data);
     }
   }, [client]);
 
@@ -63,8 +67,51 @@ export const HomePage = () => {
     navigate(`/detail/${list.id}`);
   };
 
+  const handleSearchName = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchName(value);
+    if (value) {
+      try {
+        const response = await client.searchShoppingLists(value);
+        setFilteredLists(response.data);
+      } catch (err) {
+        console.error("Failed to search shopping lists by name", err);
+      }
+    } else {
+      setFilteredLists(lists);
+    }
+  };
+
+  const handleSearchItem = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchItem(value);
+    if (value) {
+      try {
+        const response = await client.searchShoppingListsByItem(value);
+        setFilteredLists(response.data);
+      } catch (err) {
+        console.error("Failed to search shopping lists by item", err);
+      }
+    } else {
+      setFilteredLists(lists);
+    }
+  };
+
   return (
     <BaseLayout>
+      <Box mb={4} display="flex" justifyContent="space-between">
+        <Input
+          placeholder="Search by list name"
+          value={searchName}
+          onChange={handleSearchName}
+          mr={2}
+        />
+        <Input
+          placeholder="Search by item name"
+          value={searchItem}
+          onChange={handleSearchItem}
+        />
+      </Box>
       <Box>
         <Button
           variant={"solid"}
@@ -100,7 +147,7 @@ export const HomePage = () => {
           }}
         />
         <ShoppingListTable
-          data={lists}
+          data={filteredLists}
           onClickDeleteList={onDeleteShoppingList}
           onClickUpdateList={onClickUpdateShoppingList}
           onClickViewDetails={onClickViewDetails}

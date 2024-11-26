@@ -191,7 +191,7 @@ paths:
         '404':
           description: Artikel oder Einkaufsliste nicht gefunden
 
-  /api/shoppingLists/search:
+  /api/shoppingLists/search/search:
     get:
       summary: Einkaufslisten durchsuchen
       operationId: searchShoppingLists
