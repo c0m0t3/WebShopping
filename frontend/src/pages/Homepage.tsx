@@ -98,9 +98,9 @@ export const HomePage = () => {
     if (value) {
       try {
         const response = await client.searchShoppingListsByItem(value);
-        const listIds = response.data.map(
-          (item: { shoppingListId: string }) => item.shoppingListId,
-        );
+        const listIds = response.data
+          .map((item: { shoppingListId?: string }) => item.shoppingListId)
+          .filter((id): id is string => id !== undefined);
         const filtered = lists.filter((list) => listIds.includes(list.id));
         setFilteredLists(filtered);
       } catch (err) {
