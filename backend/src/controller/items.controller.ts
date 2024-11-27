@@ -6,7 +6,7 @@ export class ItemsController {
   constructor(private readonly itemRepository: ItemsRepository) {}
 
   async getItemById(req: Request, res: Response): Promise<void> {
-    if(!isUUID(req.params.id)) {
+    if (!isUUID(req.params.id)) {
       res.status(400).send({ error: 'Invalid UUID' });
       return;
     }
@@ -26,27 +26,42 @@ export class ItemsController {
   async createItems(req: Request, res: Response): Promise<void> {
     const createdItems = await this.itemRepository.createItems(req.body);
     if (createdItems.length === 0) {
-      res.status(409).send('No new items were created because they already exist.');
+      res
+        .status(409)
+        .send('No new items were created because they already exist.');
     } else {
       res.status(201).send(createdItems);
     }
   }
 
   async deleteItem(req: Request, res: Response): Promise<void> {
-    if(!isUUID(req.params.id)) {
+    if (!isUUID(req.params.id)) {
       res.status(400).send({ error: 'Invalid UUID' });
       return;
     }
-    const result = await this.itemRepository.deleteItemFromDatabase(req.params.id);
-    if (!result) {
-      res.status(404).send('Item not found');
-      return;
+    try {
+      const result = await this.itemRepository.deleteItemFromDatabase(
+        req.params.id,
+      );
+      if (!result) {
+        res.status(404).send('Item not found');
+        return;
+      }
+      res.status(204).send();
+    } catch (error) {
+      const err = error as Error;
+      if (err.message === 'Item is associated with a shopping list') {
+        res
+          .status(409)
+          .send({ error: 'Item is associated with a shopping list' });
+      } else {
+        res.status(500).send('Internal Server Error');
+      }
     }
-    res.status(204).send();
   }
 
   async updateItem(req: Request, res: Response): Promise<void> {
-    if(!isUUID(req.params.id)) {
+    if (!isUUID(req.params.id)) {
       res.status(400).send({ error: 'Invalid UUID' });
       return;
     }
@@ -54,7 +69,7 @@ export class ItemsController {
       req.params.id,
       req.body,
     );
-    if(!updatedItem) {
+    if (!updatedItem) {
       res.status(404).send('Item not found');
       return;
     }

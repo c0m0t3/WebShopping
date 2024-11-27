@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import {
   Button,
   IconButton,
+  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -23,9 +24,9 @@ import { Item } from "../../adapter/api/__generated";
 
 interface AllItemsEntryTableProps {
   items: Item[];
-  onUpdate: (itemId: string) => void;
+  onUpdate: (itemId: string, changes: Partial<Item>) => void;
   onDelete: (itemId: string) => void;
-  onAdd: (itemId: string) => void;
+  onAdd: (item: Partial<Item>) => void;
 }
 
 export const AllItemsEntryTable: React.FC<AllItemsEntryTableProps> = ({
@@ -36,11 +37,28 @@ export const AllItemsEntryTable: React.FC<AllItemsEntryTableProps> = ({
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<Partial<Item>>({});
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleAddItem = () => {
     if (selectedItemId) {
-      onAdd(selectedItemId);
+      const item = items.find((item) => item.id === selectedItemId);
+      if (item) {
+        onAdd(item);
+      }
       onClose();
+    }
+  };
+
+  const handleEditItem = (item: Item) => {
+    setSelectedItem(item);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (selectedItem.id) {
+      onUpdate(selectedItem.id, selectedItem);
+      setIsEditModalOpen(false);
     }
   };
 
@@ -64,7 +82,7 @@ export const AllItemsEntryTable: React.FC<AllItemsEntryTableProps> = ({
                   aria-label="Edit item"
                   icon={<EditIcon />}
                   size="sm"
-                  onClick={() => (item.id ? onUpdate(item.id) : null)}
+                  onClick={() => handleEditItem(item)}
                   mr="2"
                 />
                 <IconButton
@@ -110,6 +128,43 @@ export const AllItemsEntryTable: React.FC<AllItemsEntryTableProps> = ({
               Add
             </Button>
             <Button variant="ghost" onClick={onClose}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
+      <Modal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Edit Item</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Input
+              placeholder="Name"
+              value={selectedItem.name || ""}
+              onChange={(e) =>
+                setSelectedItem({ ...selectedItem, name: e.target.value })
+              }
+              mb={3}
+            />
+            <Input
+              placeholder="Description"
+              value={selectedItem.description || ""}
+              onChange={(e) =>
+                setSelectedItem({
+                  ...selectedItem,
+                  description: e.target.value,
+                })
+              }
+              mb={3}
+            />
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3} onClick={handleSaveEdit}>
+              Save
+            </Button>
+            <Button variant="ghost" onClick={() => setIsEditModalOpen(false)}>
               Cancel
             </Button>
           </ModalFooter>

@@ -10,7 +10,7 @@ export class ItemsRepository {
     const existingItems = await this.database.query.items.findMany({
       where: (items, { inArray }) => inArray(items.name, names),
     });
-    return existingItems.map(item => item.name);
+    return existingItems.map((item) => item.name);
   }
 
   async getItemById(id: string) {
@@ -38,10 +38,12 @@ export class ItemsRepository {
   }
 
   async createItems(data: { name: string; description?: string }[]) {
-    const itemNames = data.map(item => item.name);
+    const itemNames = data.map((item) => item.name);
     const existingItemNames = await this.checkItemsExist(itemNames);
 
-    const itemsToInsert = data.filter(item => !existingItemNames.includes(item.name));
+    const itemsToInsert = data.filter(
+      (item) => !existingItemNames.includes(item.name),
+    );
 
     if (itemsToInsert.length === 0) {
       return [];
@@ -54,11 +56,25 @@ export class ItemsRepository {
     });
   }
 
+  async isItemOnShoppingList(itemId: string): Promise<boolean> {
+    const shoppingListItem =
+      await this.database.query.shoppingListItems.findFirst({
+        where: (shoppingListItems, { eq }) =>
+          eq(shoppingListItems.itemId, itemId),
+      });
+    return !!shoppingListItem;
+  }
+
+  // Update the deleteItemFromDatabase method
   async deleteItemFromDatabase(id: string) {
     const existingItem = await this.getItemById(id);
 
     if (!existingItem) {
       return null;
+    }
+
+    if (await this.isItemOnShoppingList(id)) {
+      throw new Error('Item is associated with a shopping list');
     }
 
     return this.database.delete(items).where(eq(items.id, id));
@@ -71,10 +87,14 @@ export class ItemsRepository {
       return null;
     }
 
-    return this.database.update(items).set(data).where(eq(items.id, id)).returning({
-      id: items.id,
-      name: items.name,
-      description: items.description,
-    });
+    return this.database
+      .update(items)
+      .set(data)
+      .where(eq(items.id, id))
+      .returning({
+        id: items.id,
+        name: items.name,
+        description: items.description,
+      });
   }
 }

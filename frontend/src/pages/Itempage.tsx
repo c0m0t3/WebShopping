@@ -3,6 +3,8 @@ import { AllItemsEntryTable } from "./components/AllItemsEntryTable";
 import { Item } from "../adapter/api/__generated";
 import { BaseLayout } from "../layout/BaseLayout";
 import { useApiClient } from "../adapter/api/useApiClient";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ItemPage = () => {
   const [allItems, setAllItems] = useState<Item[]>([]);
@@ -13,7 +15,6 @@ const ItemPage = () => {
     const fetchAllItems = async () => {
       try {
         const response = await client.getItems();
-        console.log("Fetch all items response", response);
         setAllItems(response.data);
       } catch (err) {
         setError("Failed to fetch all items");
@@ -23,17 +24,56 @@ const ItemPage = () => {
     fetchAllItems();
   }, [client]);
 
+  const handleUpdate = async (itemId: string, changes: Partial<Item>) => {
+    try {
+      await client.updateItem(itemId, changes);
+      const response = await client.getItems();
+      setAllItems(response.data);
+    } catch (err) {
+      setError("Failed to update item");
+    }
+  };
+
+  const handleDelete = async (itemId: string) => {
+    try {
+      await client.deleteItem(itemId);
+      console.log("Deleted item", itemId);
+      const response = await client.getItems();
+      setAllItems(response.data);
+    } catch (err) {
+      const error = err as { response?: { status?: number } };
+      if (error.response && error.response.status === 409) {
+        toast.warn(
+          "Item is associated with a shopping list and cannot be deleted",
+        );
+      } else {
+        setError("Failed to delete item");
+      }
+    }
+  };
+
+  const handleAdd = async (item: Partial<Item>) => {
+    try {
+      await client.createItem(item);
+      const response = await client.getItems();
+      setAllItems(response.data);
+    } catch (err) {
+      setError("Failed to add item");
+    }
+  };
+
   return (
     <BaseLayout>
       {error && <div>{error}</div>}
       {!error && (
         <AllItemsEntryTable
           items={allItems}
-          onUpdate={(itemId: string) => console.log(`Update item ${itemId}`)}
-          onDelete={(itemId: string) => console.log(`Delete item ${itemId}`)}
-          onAdd={(itemId: string) => console.log(`Add item ${itemId}`)}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
+          onAdd={handleAdd}
         />
       )}
+      <ToastContainer />
     </BaseLayout>
   );
 };
