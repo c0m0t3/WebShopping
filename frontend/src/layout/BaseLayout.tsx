@@ -8,6 +8,7 @@ import {
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
 import { MouseEventHandler } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 const ColorModeToggle = () => {
   const { toggleColorMode } = useColorMode();
@@ -21,6 +22,9 @@ const ColorModeToggle = () => {
 };
 
 export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const isOnItemsPage = location.pathname === "/items";
+
   return (
     <Box
       bg={"gray.200"}
@@ -34,6 +38,9 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
         <Box flex={1}></Box>
 
         <Box gap={4} display={"flex"}>
+          <Link to={isOnItemsPage ? "/" : "/items"}>
+            <Button>{isOnItemsPage ? "ShoppingList" : "Items"}</Button>
+          </Link>
           <ColorModeToggle />
         </Box>
       </HStack>

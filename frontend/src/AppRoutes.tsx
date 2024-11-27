@@ -1,6 +1,7 @@
 import { Navigate, Route, RouteProps, Routes } from "react-router-dom";
-import { HomePage } from "./pages/Homepage.tsx";
-import DetailView from "./pages/DetailView.tsx";
+import { HomePage } from "./pages/Homepage";
+import DetailView from "./pages/DetailView";
+import ItemPage from "./pages/Itempage";
 
 export type RouteConfig = RouteProps & {
   /**
@@ -24,6 +25,10 @@ export const appRoutes: RouteConfig[] = [
   {
     path: "/detail/:id",
     element: <DetailView />,
+  },
+  {
+    path: "/items",
+    element: <ItemPage />,
   },
 ];
 

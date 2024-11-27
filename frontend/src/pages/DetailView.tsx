@@ -14,7 +14,7 @@ import { Box, Heading, Text } from "@chakra-ui/react";
 const DetailView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   if (!id) {
-    return <div>There is no ID</div>;
+    return <div>There is no ID</div>; //TODO: Add a proper error handling
   }
   const client = useApiClient();
   const [shoppingList, setShoppingList] = useState<ShoppingList | null>(null);
@@ -68,6 +68,7 @@ const DetailView: React.FC = () => {
     const fetchAllItems = async () => {
       try {
         const response = await client.getItems();
+        console.log("Fetching all items");
         setAllItems(response.data);
       } catch (err) {
         setError("Failed to fetch all items");
