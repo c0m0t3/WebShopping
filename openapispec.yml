@@ -212,7 +212,27 @@ paths:
                   $ref: '#/components/schemas/ShoppingList'
         '400':
           description: Ungültige Anfrage
-
+  /api/shoppingLists/search/{itemId}:
+    get:
+      summary: Einkaufslisten mit Item finden
+      operationId: searchShoppingListsByItem
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Einkaufslisten mit Item
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ItemOutShoppingList'
+        '404':
+          description: Item nicht gefunden
   /api/items:
     get:
       summary: Alle Artikel abrufen
@@ -447,12 +467,14 @@ components:
         is_purchased:
           type: boolean
     CreateItemRequest:
-      type: object
-      properties:
-        name:
-          type: string
-        description:
-          type: string
+      type: array
+      items:
+        type: object
+        properties:
+          name:
+            type: string
+          description:
+            type: string
     PostItemToList:
       type: object
       properties:

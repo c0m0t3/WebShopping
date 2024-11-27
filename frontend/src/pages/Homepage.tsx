@@ -1,9 +1,9 @@
 import { useApiClient } from "../adapter/api/useApiClient.ts";
 import { BaseLayout } from "../layout/BaseLayout.tsx";
-import { Box, Button, Input, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Input, Select, useDisclosure } from "@chakra-ui/react";
 import { useCallback, useEffect, useState } from "react";
 import { CreateShoppingListModal } from "./components/CreateShoppingListModal.tsx";
-import { ShoppingList } from "../adapter/api/__generated";
+import { Item, ShoppingList } from "../adapter/api/__generated";
 import { ShoppingListTable } from "./components/ShoppingListEntryTable.tsx";
 import { useNavigate } from "react-router-dom";
 
@@ -17,6 +17,7 @@ export const HomePage = () => {
   );
   const [searchName, setSearchName] = useState("");
   const [searchItem, setSearchItem] = useState("");
+  const [allItems, setAllItems] = useState<Item[]>([]);
   const navigate = useNavigate();
 
   const onLoadData = useCallback(async () => {
@@ -29,7 +30,16 @@ export const HomePage = () => {
 
   useEffect(() => {
     onLoadData();
-  }, [onLoadData]);
+    const fetchAllItems = async () => {
+      try {
+        const response = await client.getItems();
+        setAllItems(response.data);
+      } catch (err) {
+        console.error("Failed to fetch all items", err);
+      }
+    };
+    fetchAllItems();
+  }, [onLoadData, client]);
 
   const onCreateList = async (data: any) => {
     await client.createShoppingList(data);
@@ -82,15 +92,23 @@ export const HomePage = () => {
     }
   };
 
-  const handleSearchItem = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchItem = async (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     setSearchItem(value);
     if (value) {
       try {
         const response = await client.searchShoppingListsByItem(value);
-        setFilteredLists(response.data);
+        const listIds = response.data.map(
+          (item: { shoppingListId: string }) => item.shoppingListId,
+        );
+        const filtered = lists.filter((list) => listIds.includes(list.id));
+        setFilteredLists(filtered);
       } catch (err) {
-        console.error("Failed to search shopping lists by item", err);
+        const error = err as { response?: { status?: number } };
+        if (error.response && error.response.status === 404) {
+          setFilteredLists([]);
+        } else {
+        }
       }
     } else {
       setFilteredLists(lists);
@@ -106,11 +124,17 @@ export const HomePage = () => {
           onChange={handleSearchName}
           mr={2}
         />
-        <Input
-          placeholder="Search by item name"
+        <Select
+          placeholder="Search by item"
           value={searchItem}
           onChange={handleSearchItem}
-        />
+        >
+          {allItems.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.name}
+            </option>
+          ))}
+        </Select>
       </Box>
       <Box>
         <Button
