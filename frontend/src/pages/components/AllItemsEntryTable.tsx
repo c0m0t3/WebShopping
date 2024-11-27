@@ -10,7 +10,6 @@ import {
   ModalFooter,
   ModalHeader,
   ModalOverlay,
-  Select,
   Table,
   Tbody,
   Td,
@@ -26,7 +25,7 @@ interface AllItemsEntryTableProps {
   items: Item[];
   onUpdate: (itemId: string, changes: Partial<Item>) => void;
   onDelete: (itemId: string) => void;
-  onAdd: (item: Partial<Item>) => void;
+  onAdd: (items: Partial<Item>[]) => void;
 }
 
 export const AllItemsEntryTable: React.FC<AllItemsEntryTableProps> = ({
@@ -36,30 +35,31 @@ export const AllItemsEntryTable: React.FC<AllItemsEntryTableProps> = ({
   onAdd,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
-  const [selectedItem, setSelectedItem] = useState<Partial<Item>>({});
+  const [selectedItems, setSelectedItems] = useState<Partial<Item>[]>([
+    { name: "", description: "" },
+  ]);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleAddItem = () => {
-    if (selectedItemId) {
-      const item = items.find((item) => item.id === selectedItemId);
-      if (item) {
-        onAdd(item);
-      }
-      onClose();
-    }
+    onAdd(selectedItems);
+    setSelectedItems([{ name: "", description: "" }]);
+    onClose();
   };
 
   const handleEditItem = (item: Item) => {
-    setSelectedItem(item);
+    setSelectedItems([item]);
     setIsEditModalOpen(true);
   };
 
   const handleSaveEdit = () => {
-    if (selectedItem.id) {
-      onUpdate(selectedItem.id, selectedItem);
+    if (selectedItems[0].id) {
+      onUpdate(selectedItems[0].id, selectedItems[0]);
       setIsEditModalOpen(false);
     }
+  };
+
+  const handleAddMoreFields = () => {
+    setSelectedItems([...selectedItems, { name: "", description: "" }]);
   };
 
   return (
@@ -103,25 +103,48 @@ export const AllItemsEntryTable: React.FC<AllItemsEntryTableProps> = ({
         onClick={onOpen}
         mt="4"
       >
-        Add Item
+        Add Items
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Select Item to Add</ModalHeader>
+          <ModalHeader>Add New Items</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Select
-              placeholder="Select item"
-              onChange={(e) => setSelectedItemId(e.target.value)}
-            >
-              {items.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </Select>
+            {selectedItems.map((item, index) => (
+              <div key={index}>
+                <Input
+                  placeholder="Name"
+                  value={item.name}
+                  onChange={(e) =>
+                    setSelectedItems(
+                      selectedItems.map((itm, idx) =>
+                        idx === index ? { ...itm, name: e.target.value } : itm,
+                      ),
+                    )
+                  }
+                  mb={3}
+                />
+                <Input
+                  placeholder="Description"
+                  value={item.description}
+                  onChange={(e) =>
+                    setSelectedItems(
+                      selectedItems.map((itm, idx) =>
+                        idx === index
+                          ? { ...itm, description: e.target.value }
+                          : itm,
+                      ),
+                    )
+                  }
+                  mb={3}
+                />
+              </div>
+            ))}
+            <Button onClick={handleAddMoreFields} mt={3}>
+              Add 1 More Item
+            </Button>
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={handleAddItem}>
@@ -142,20 +165,21 @@ export const AllItemsEntryTable: React.FC<AllItemsEntryTableProps> = ({
           <ModalBody>
             <Input
               placeholder="Name"
-              value={selectedItem.name || ""}
+              value={selectedItems[0].name || ""}
               onChange={(e) =>
-                setSelectedItem({ ...selectedItem, name: e.target.value })
+                setSelectedItems([
+                  { ...selectedItems[0], name: e.target.value },
+                ])
               }
               mb={3}
             />
             <Input
               placeholder="Description"
-              value={selectedItem.description || ""}
+              value={selectedItems[0].description || ""}
               onChange={(e) =>
-                setSelectedItem({
-                  ...selectedItem,
-                  description: e.target.value,
-                })
+                setSelectedItems([
+                  { ...selectedItems[0], description: e.target.value },
+                ])
               }
               mb={3}
             />

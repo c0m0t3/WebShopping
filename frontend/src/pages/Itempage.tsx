@@ -55,13 +55,19 @@ const ItemPage = () => {
     }
   };
 
-  const handleAdd = async (item: Partial<Item>) => {
+  const handleAdd = async (items: Partial<Item>[]) => {
     try {
-      await client.createItem(item);
+      console.log("Adding items", items);
+      await client.createItem(items);
       const response = await client.getItems();
       setAllItems(response.data);
     } catch (err) {
-      setError("Failed to add item");
+      const error = err as { response?: { status?: number } };
+      if (error.response && error.response.status === 409) {
+        toast.warn("An item with the same name already exists");
+      } else {
+        setError("Failed to add items");
+      }
     }
   };
 
