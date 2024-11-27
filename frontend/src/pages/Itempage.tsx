@@ -25,8 +25,11 @@ const ItemPage = () => {
   }, [client]);
 
   const handleUpdate = async (itemId: string, changes: Partial<Item>) => {
+    const { name, description } = changes;
+    const filteredChanges = { name, description };
+
     try {
-      await client.updateItem(itemId, changes);
+      await client.updateItem(itemId, filteredChanges);
       const response = await client.getItems();
       setAllItems(response.data);
     } catch (err) {
