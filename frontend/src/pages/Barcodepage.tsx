@@ -9,6 +9,8 @@ import {
 } from "@chakra-ui/react";
 import { useApiClient } from "../adapter/api/useApiClient";
 import { BaseLayout } from "../layout/BaseLayout";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BarcodePage = () => {
   const client = useApiClient();
@@ -27,9 +29,19 @@ const BarcodePage = () => {
       if (!barcode) {
         throw new Error("Barcode is required");
       }
-      console.log("Searching barcode", barcode);
       const response = await client.getProductByBarcode(barcode);
       const { product_name, product_type } = response.data;
+      if (!product_name) {
+        toast.warn("No name and type found for the given barcode.", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
       setItemData({
         name: product_name ?? "",
         description: product_type ?? "",
@@ -57,10 +69,13 @@ const BarcodePage = () => {
               value={barcode}
               onChange={handleBarcodeChange}
               placeholder="Enter barcode"
-              size="lg" // Make the input larger
+              size="lg"
+              width={"30em"}
             />
             <Center mt={2}>
-              <Button onClick={handleSearchBarcode}>Search</Button>
+              <Button onClick={handleSearchBarcode} width={"30em"}>
+                Search
+              </Button>
             </Center>
           </FormControl>
           {itemData.name && (
@@ -90,6 +105,7 @@ const BarcodePage = () => {
           )}
         </Box>
       </Center>
+      <ToastContainer />
     </BaseLayout>
   );
 };
