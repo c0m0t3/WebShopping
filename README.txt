@@ -24,7 +24,7 @@ Technischer Aufbau
 	•	DELETE /lists/:id: Eine Liste löschen
 	•	GET /lists/search: Nach Listen suchen
 
-Installation & Setup
+# Installation & Setup
 
 	1.	Voraussetzungen: Node.js, npm/yarn, Datenbank
 	2.	Schritte:
