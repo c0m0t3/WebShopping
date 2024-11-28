@@ -1,10 +1,8 @@
 # WebShopping
 
-# WebShopping
-
 ## Projektbeschreibung
 
-Eine Backend-Anwendung zum Verwalten von Einkaufslisten und Artikeln. Die Anwendung bietet CRUD-Funktionalitäten sowie
+Eine Anwendung zum Verwalten von Einkaufslisten und Artikeln. Die Anwendung bietet CRUD-Funktionalitäten sowie
 mehrere Suchfunktionen, um die Listen zu filtern.
 Zusätzlich sind zwei Freestyle Tasks implementiert, die die Anwendung um zusätzliche Features erweitern.
 
@@ -15,7 +13,7 @@ dazu, die im Modul erlernten Technologien und Konzepte in einem praxisnahen Proj
 
 ## Build-Status
 
-[![Build Status](https://travis-ci.com/username/repo.svg?branch=master)](https://travis-ci.com/username/repo)
+[![Build Status](https://travis-ci.com/c0m0t3/repo.svg?branch=master)](https://travis-ci.com/c0m0t3/repo)
 
 ## Code Style
 
@@ -81,7 +79,7 @@ npm run start
 
 ### Spezielle Routen
 
-- **GET /shoppingLists/search/search**: Einkaufslisten durchsuchen
+- **GET /shoppingLists/search/search**: Einkaufslisten nach Name/Beschreibung durchsuchen
 - **GET /shoppingLists/search/:id**: Einkaufslisten nach Item durchsuchen
 
 ### Store
@@ -94,24 +92,24 @@ npm run start
 
 - **GET /products/lookup**: Produkt nach Barcode suchen
 
-# Tests
+## Tests
 
-    - Automatisierte Tests: Jest
-    - zum ausführen der Tests: npm run test
-    - Manuelle Tests: Postman oder curl
+- Automatisierte Tests: Jest
+- Zum Ausführen der Tests: `npm run test`
+- Manuelle Tests: Postman oder curl
 
-Fehlerbehandlung
+## Fehlerbehandlung
 
-	•	Gültigkeit der Eingabedaten prüfen
-	•	Fehler bei leeren oder inkorrekten Feldern abfangen
-	•	Korrekte HTTP-Statuscodes verwenden
+- Gültigkeit der Eingabedaten prüfen
+- Fehler bei leeren oder inkorrekten Feldern abfangen
+- Korrekte HTTP-Statuscodes verwenden
 
-Deployment
+## Deployment
 
-	•	Docker: Anleitung zur Nutzung eines Docker-Containers
-	•	Gitlab: Code-Upload in das h_da Gitlab-Repository
+- Docker: Anleitung zur Nutzung eines Docker-Containers
+- Gitlab: Code-Upload in das h\_da Gitlab-Repository
 
-Entwicklerhinweise
+## Entwicklerhinweise
 
-	•	Coding-Standards: Einheitliche Syntax, Kommentare, konsistente Namenskonventionen
-	•	.gitignore: node_modules, environment files und API-Keys ausschließen
+- Coding-Standards: Einheitliche Syntax, Kommentare, konsistente Namenskonventionen
+- `.gitignore`: `node_modules`, environment files und API-Keys ausschließen
