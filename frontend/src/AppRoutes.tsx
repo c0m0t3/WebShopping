@@ -2,6 +2,7 @@ import { Navigate, Route, RouteProps, Routes } from "react-router-dom";
 import { HomePage } from "./pages/Homepage";
 import DetailView from "./pages/DetailView";
 import ItemPage from "./pages/Itempage";
+import BarcodePage from "./pages/Barcodepage.tsx";
 
 export type RouteConfig = RouteProps & {
   /**
@@ -29,6 +30,10 @@ export const appRoutes: RouteConfig[] = [
   {
     path: "/items",
     element: <ItemPage />,
+  },
+  {
+    path: "/barcode",
+    element: <BarcodePage />,
   },
 ];
 

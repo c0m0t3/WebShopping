@@ -3,10 +3,12 @@ import {
   Button,
   chakra,
   HStack,
+  Icon,
   useColorMode,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+import { FaBarcode } from "react-icons/fa";
 import { MouseEventHandler } from "react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -40,6 +42,9 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
         <Box gap={4} display={"flex"}>
           <Link to={isOnItemsPage ? "/" : "/items"}>
             <Button>{isOnItemsPage ? "ShoppingList" : "Items"}</Button>
+          </Link>
+          <Link to="/barcode">
+            <Button leftIcon={<Icon as={FaBarcode} />}>Barcode</Button>
           </Link>
           <ColorModeToggle />
         </Box>

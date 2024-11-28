@@ -392,6 +392,30 @@ paths:
           description: Artikel erfolgreich aus der Einkaufsliste entfernt
         '404':
           description: Artikel oder Einkaufsliste nicht gefunden
+  /api/products/lookup:
+    get:
+      summary: Produktinformationen anhand des Barcodes abrufen
+      operationId: getProductByBarcode
+      parameters:
+        - name: barcode
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Produktinformationen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product_name:
+                    type: string
+                  product_type:
+                    type: string
+        '404':
+          description: Produkt nicht gefunden
 
 components:
   schemas:
