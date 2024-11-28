@@ -1,10 +1,22 @@
-Einkaufslisten-App
+# WebShopping
 
-Projektbeschreibung
+ # Projektbeschreibung
+Eine Backend-Anwendung zum Verwalten von Einkaufslisten und Artikeln. Die Anwendung bietet CRUD-Funktionalitäten sowie mehrere Suchfunktionen, um die Listen zu filtern.
+Zusätzlich sind zwei Freestyle Tasks implementiert, die die Anwendung um zusätzliche Features erweitern.
 
-Eine Backend-Anwendung zum Verwalten von Einkaufslisten und Artikeln. Die Anwendung bietet CRUD-Funktionalitäten und eine Suchfunktion über eine HTTP-API.
+# Motivation
+Das Projekt wurde im Rahmen des Moduls "Fortgeschrittene Webentwicklung" an der Hochschule Darmstadt erstellt. Es dient dazu, die im Modul erlernten Technologien und Konzepte in einem praxisnahen Projekt anzuwenden.
 
-Features
+# Build-Status
+[![Build Status](https://travis-ci.com/username/repo.svg?branch=master)](https://travis-ci.com/username/repo)
+
+# Code Style
+Der Code folgt den Airbnb JavaScript Style Guidelines.
+
+# Tech/Framework
+Node.js, TypeScript, Express, PostgreSQL
+
+# Features
 
 	•	Einkaufslisten: Erstellen, Bearbeiten, Anzeigen, Löschen
 	•	Artikel: Hinzufügen, Entfernen, Bearbeiten von Artikeln in Listen
@@ -12,34 +24,30 @@ Features
 	•	Freestyle Task #1: [Beschreibung des ersten zusätzlichen Features]
 	•	Freestyle Task #2: [Beschreibung des zweiten zusätzlichen Features mit externer API]
 
-Technischer Aufbau
-
-	•	Technologien: Node.js, TypeScript, Express
-	•	Datenbankoptionen: [PostgreSQL]
-	•	API-Routenübersicht:
-	•	GET /lists: Alle Einkaufslisten abrufen
-	•	POST /lists: Neue Liste erstellen
-	•	GET /lists/:id: Eine Liste anzeigen
-	•	PUT /lists/:id: Eine Liste aktualisieren
-	•	DELETE /lists/:id: Eine Liste löschen
-	•	GET /lists/search: Nach Listen suchen
-
 # Installation & Setup
 
-	1.	Voraussetzungen: Node.js, npm/yarn, Datenbank
+	1.	Voraussetzungen: Node.js, npm/yarn, Datenbank/Docker
 	2.	Schritte:
 
-```bash
 git clone <repository-url>
 cd <projektordner>
 npm install
 npm run start
 
+# API-Referenz
 
-Tests
+    •	GET /lists: Alle Einkaufslisten abrufen
+    •	POST /lists: Neue Liste erstellen
+    •	GET /lists/:id: Eine Liste anzeigen
+    •	PUT /lists/:id: Eine Liste aktualisieren
+    •	DELETE /lists/:id: Eine Liste löschen
+    •	GET /lists/search: Nach Listen suchen
 
-	•	Automatisierte Tests: [Erklärung der Teststrategie, z.B. mit Jest]
-	•	Manuelle Tests: Anleitung zur Nutzung von Postman oder curl
+# Tests
+    - Automatisierte Tests: Jest
+    - zum ausführen der Tests: npm run test
+    - Manuelle Tests: Postman oder curl
+
 
 Fehlerbehandlung
 
