@@ -1,3 +1,4 @@
+// frontend/src/pages/Barcodepage.tsx
 import React, { useState } from "react";
 import {
   Box,
@@ -9,8 +10,9 @@ import {
 } from "@chakra-ui/react";
 import { useApiClient } from "../adapter/api/useApiClient";
 import { BaseLayout } from "../layout/BaseLayout";
-import { toast, ToastContainer } from "react-toastify";
+import { showToast } from "../utils/toastUtils";
 import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 const BarcodePage = () => {
   const client = useApiClient();
@@ -32,22 +34,19 @@ const BarcodePage = () => {
       const response = await client.getProductByBarcode(barcode);
       const { product_name, product_type } = response.data;
       if (!product_name) {
-        toast.warn("No name and type found for the given barcode.", {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        showToast("No name and type found for the given barcode.", "warn");
       }
       setItemData({
         name: product_name ?? "",
         description: product_type ?? "",
       });
-    } catch (err) {
-      console.error("Failed to search item by barcode", err);
+    } catch (err: any) {
+      if (err.response && err.response.status === 404) {
+        showToast("Barcode not found.", "error");
+      } else {
+        console.error("Failed to search item by barcode", err);
+        showToast("Failed to search item by barcode", "error");
+      }
     }
   };
 

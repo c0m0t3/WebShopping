@@ -1,10 +1,12 @@
+// frontend/src/pages/Itempage.tsx
 import { useEffect, useState } from "react";
 import { AllItemsEntryTable } from "./components/AllItemsEntryTable";
 import { Item } from "../adapter/api/__generated";
 import { BaseLayout } from "../layout/BaseLayout";
 import { useApiClient } from "../adapter/api/useApiClient";
-import { toast, ToastContainer } from "react-toastify";
+import { showToast } from "../utils/toastUtils";
 import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 const ItemPage = () => {
   const [allItems, setAllItems] = useState<Item[]>([]);
@@ -46,8 +48,9 @@ const ItemPage = () => {
     } catch (err) {
       const error = err as { response?: { status?: number } };
       if (error.response && error.response.status === 409) {
-        toast.warn(
+        showToast(
           "Item is associated with a shopping list and cannot be deleted",
+          "warn",
         );
       } else {
         setError("Failed to delete item");
@@ -64,7 +67,7 @@ const ItemPage = () => {
     } catch (err) {
       const error = err as { response?: { status?: number } };
       if (error.response && error.response.status === 409) {
-        toast.warn("An item with the same name already exists");
+        showToast("An item with the same name already exists", "warn");
       } else {
         setError("Failed to add items");
       }
