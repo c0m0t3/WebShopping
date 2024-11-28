@@ -15,7 +15,7 @@ Features
 Technischer Aufbau
 
 	•	Technologien: Node.js, TypeScript, Express
-	•	Datenbankoptionen: [z. B. MySQL, PostgreSQL, MongoDB]
+	•	Datenbankoptionen: [PostgreSQL]
 	•	API-Routenübersicht:
 	•	GET /lists: Alle Einkaufslisten abrufen
 	•	POST /lists: Neue Liste erstellen
@@ -29,10 +29,12 @@ Installation & Setup
 	1.	Voraussetzungen: Node.js, npm/yarn, Datenbank
 	2.	Schritte:
 
-	git clone <repository-url>
-    cd <projektordner>
-    npm install
-    npm run start
+```bash
+git clone <repository-url>
+cd <projektordner>
+npm install
+npm run start
+```
 
 Tests
 
