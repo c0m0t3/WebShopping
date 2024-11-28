@@ -15,8 +15,8 @@ export const HomePage = () => {
   const [listToBeUpdated, setListToBeUpdated] = useState<ShoppingList | null>(
     null,
   );
-  const [searchName, setSearchName] = useState("");
-  const [searchItem, setSearchItem] = useState("");
+  const [searchType, setSearchType] = useState("name");
+  const [searchValue, setSearchValue] = useState("");
   const [allItems, setAllItems] = useState<Item[]>([]);
   const navigate = useNavigate();
 
@@ -77,38 +77,22 @@ export const HomePage = () => {
     navigate(`/detail/${list.id}`);
   };
 
-  const handleSearchName = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearch = async (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const value = e.target.value;
-    setSearchName(value);
+    setSearchValue(value);
     if (value) {
       try {
-        const response = await client.searchShoppingLists(value);
+        let response;
+        if (searchType === "name") {
+          response = await client.searchShoppingLists(value);
+        } else {
+          response = await client.searchShoppingListsByStore(value);
+        }
         setFilteredLists(response.data);
       } catch (err) {
-        console.error("Failed to search shopping lists by name", err);
-      }
-    } else {
-      setFilteredLists(lists);
-    }
-  };
-
-  const handleSearchItem = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setSearchItem(value);
-    if (value) {
-      try {
-        const response = await client.searchShoppingListsByItem(value);
-        const listIds = response.data
-          .map((item: { shoppingListId?: string }) => item.shoppingListId)
-          .filter((id): id is string => id !== undefined);
-        const filtered = lists.filter((list) => listIds.includes(list.id));
-        setFilteredLists(filtered);
-      } catch (err) {
-        const error = err as { response?: { status?: number } };
-        if (error.response && error.response.status === 404) {
-          setFilteredLists([]);
-        } else {
-        }
+        console.error(`Failed to search shopping lists by ${searchType}`, err);
       }
     } else {
       setFilteredLists(lists);
@@ -118,16 +102,24 @@ export const HomePage = () => {
   return (
     <BaseLayout>
       <Box mb={4} display="flex" justifyContent="space-between">
+        <Select
+          value={searchType}
+          onChange={(e) => setSearchType(e.target.value)}
+          mr={2}
+        >
+          <option value="name">Search by Name</option>
+          <option value="store">Search by Store</option>
+        </Select>
         <Input
-          placeholder="Search by list name"
-          value={searchName}
-          onChange={handleSearchName}
+          placeholder={`Search by ${searchType}`}
+          value={searchValue}
+          onChange={handleSearch}
           mr={2}
         />
         <Select
           placeholder="Search by item"
-          value={searchItem}
-          onChange={handleSearchItem}
+          value={searchValue}
+          onChange={handleSearch}
         >
           {allItems.map((item) => (
             <option key={item.id} value={item.id}>

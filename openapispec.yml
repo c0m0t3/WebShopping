@@ -392,6 +392,27 @@ paths:
           description: Artikel erfolgreich aus der Einkaufsliste entfernt
         '404':
           description: Artikel oder Einkaufsliste nicht gefunden
+  /api/shoppingLists/store/store:
+    get:
+      summary: Einkaufslisten nach Geschäft finden
+      operationId: searchShoppingListsByStore
+      parameters:
+        - name: store
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Einkaufslisten im Geschäft
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ShoppingList'
+        '404':
+          description: Geschäft nicht gefunden
   /api/products/lookup:
     get:
       summary: Produktinformationen anhand des Barcodes abrufen
