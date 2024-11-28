@@ -106,9 +106,11 @@ export const HomePage = () => {
           value={searchType}
           onChange={(e) => setSearchType(e.target.value)}
           mr={2}
+          width={"auto"}
+          minWidth={"7em"}
         >
-          <option value="name">Search by Name</option>
-          <option value="store">Search by Store</option>
+          <option value="name"> Name</option>
+          <option value="store"> Store</option>
         </Select>
         <Input
           placeholder={`Search by ${searchType}`}
