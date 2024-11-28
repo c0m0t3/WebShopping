@@ -26,10 +26,27 @@ Node.js, TypeScript, Express, PostgreSQL
 ## Features
 
 - Einkaufslisten: Erstellen, Bearbeiten, Anzeigen, Löschen
-- Artikel: Hinzufügen, Entfernen, Bearbeiten von Artikeln in Listen
-- Suchfunktion: Nach Namen oder Beschreibung filtern
-- Freestyle Task #1: \[Beschreibung des ersten zusätzlichen Features\]
-- Freestyle Task #2: \[Beschreibung des zweiten zusätzlichen Features mit externer API\]
+- Artikel: Erstellen, Bearbeiten, Anzeigen, Löschen
+- Einkaufslisten-Items: Verknüpfen, Entfernen, Anzeigen, Aktualisieren
+- Suchfunktion: Nach Namen, Beschreibung, Item oder Store suchen
+
+## Freestyle Tasks
+
+### Freestyle Task #1: [Beschreibung des ersten zusätzlichen Features]
+
+- Da die Einkaufslisten für verschiedenen Einkaufsläden erstellt werden, soll es möglich sein, einen Store zu einer
+  Einkaufsliste hinzuzufügen.
+- Hinzufügen von einem Store-Attribut zu den Einkaufslisten
+- Anzeige des Stores in der Einkaufsliste
+- Suchfunktion nach Store
+
+### Freestyle Task #2: [Beschreibung des zweiten zusätzlichen Features mit externer API]
+
+- Implementierung einer Barcode-Scanner-Funktion, um Artikel über den Barcode zu suchen und hinzuzufügen.
+- Verwendung der externen API "Barcode Lookup" von openfoodfacts.org
+- Eingeben des Barcodes in die Suchleiste
+- Anzeige des gefundenen Artikels
+- Hinzufügen des Artikels als Item in die Datenbank
 
 ## Installation & Setup
 
@@ -44,11 +61,6 @@ npm run start
 ```
 
 ## API-Referenz
-
-### Authentifizierung
-
-- **POST /auth/register**: Benutzer registrieren
-- **POST /auth/login**: Benutzer einloggen
 
 ### Health
 
