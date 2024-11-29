@@ -78,11 +78,23 @@ export const HomePage = () => {
   const onUpdateShoppingList = async (list: any) => {
     if (listToBeUpdated?.id) {
       const { id, createdAt, updatedAt, items, ...updateData } = list;
-      await client.updateShoppingList(listToBeUpdated.id, updateData);
+      try {
+        await client.updateShoppingList(listToBeUpdated.id, updateData);
+        await onLoadData();
+        originalOnClose();
+        setListToBeUpdated(null);
+      } catch (err: any) {
+        if (err.response && err.response.status === 400) {
+          showToast(
+            "Failed to update shopping list, a name is required",
+            "error",
+          );
+        } else {
+          showToast("Failed to update shopping list", "error");
+        }
+        console.error("Failed to update shopping list", err);
+      }
     }
-    await onLoadData();
-    originalOnClose();
-    setListToBeUpdated(null);
   };
 
   const onClose = () => {
