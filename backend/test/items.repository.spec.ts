@@ -1,7 +1,6 @@
 import { TestDatabase } from './helpers/database';
 import { ItemsRepository } from '../src/database/repository/items.repository';
 
-
 describe('ItemsRepository Integration Tests', () => {
   const testDatabase = new TestDatabase();
   let repository: ItemsRepository;
@@ -35,7 +34,9 @@ describe('ItemsRepository Integration Tests', () => {
     });
 
     it('should return null if the item does not exist', async () => {
-      const item = await repository.getItemById("cc2e9609-4d06-42e5-bc2a-1a81789740b7");
+      const item = await repository.getItemById(
+        'cc2e9609-4d06-42e5-bc2a-1a81789740b7',
+      );
       expect(item).toBeNull();
     });
   });
@@ -92,6 +93,15 @@ describe('ItemsRepository Integration Tests', () => {
       const createdItems = await repository.createItems(newItems);
       expect(createdItems.length).toBe(0);
     });
+
+    it('should throw an error when creating items with empty names', async () => {
+      const newItems = [
+        { name: '', description: 'Description for Test Item with empty name' },
+      ];
+      await expect(repository.createItems(newItems)).rejects.toThrow(
+        'Item name can not be empty',
+      );
+    });
   });
 
   describe('deleteItemFromDatabase', () => {
@@ -104,7 +114,9 @@ describe('ItemsRepository Integration Tests', () => {
     });
 
     it('should return null if the item does not exist', async () => {
-      const deletedItem = await repository.deleteItemFromDatabase("cc2e9609-4d06-42e5-bc2a-1a81789740b7");
+      const deletedItem = await repository.deleteItemFromDatabase(
+        'cc2e9609-4d06-42e5-bc2a-1a81789740b7',
+      );
       expect(deletedItem).toBeNull();
     });
   });
@@ -116,18 +128,23 @@ describe('ItemsRepository Integration Tests', () => {
         name: 'Updated Test Item 1',
         description: 'Updated Description for Test Item 1',
       });
-      expect(updatedItem).toEqual([{
-        id: test_id,
-        name: 'Updated Test Item 1',
-        description: 'Updated Description for Test Item 1',
-      }]);
+      expect(updatedItem).toEqual([
+        {
+          id: test_id,
+          name: 'Updated Test Item 1',
+          description: 'Updated Description for Test Item 1',
+        },
+      ]);
     });
 
     it('should return null if the item does not exist', async () => {
-      const updatedItem = await repository.updateItem("cc2e9609-4d06-42e5-bc2a-1a81789740b7", {
-        name: 'Updated Test Item',
-        description: 'Updated Description for Test Item',
-      });
+      const updatedItem = await repository.updateItem(
+        'cc2e9609-4d06-42e5-bc2a-1a81789740b7',
+        {
+          name: 'Updated Test Item',
+          description: 'Updated Description for Test Item',
+        },
+      );
       expect(updatedItem).toBeNull();
     });
   });
