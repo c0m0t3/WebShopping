@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { AuthController } from '../controller/auth.controller';
 import { HealthController } from '../controller/health.controller';
 import { ItemsController } from '../controller/items.controller';
 import { ShoppingListsController } from '../controller/shoppingLists.controller';
@@ -10,7 +9,7 @@ export class Routes {
   private router: Router;
 
   constructor(
-    private readonly authController: AuthController, //todo hier auch die anderen Controller hinzufügen
+    //todo hier auch die anderen Controller hinzufügen
     private readonly healthController: HealthController,
     private readonly itemsController: ItemsController,
     private readonly ShoppingListsController: ShoppingListsController,
@@ -24,14 +23,6 @@ export class Routes {
   }
 
   private initializeRoutes() {
-    this.router.post(
-      '/auth/register',
-      this.authController.registerUser.bind(this.authController),
-    );
-    this.router.post(
-      '/auth/login',
-      this.authController.loginUser.bind(this.authController),
-    );
     // Health appRoutes
     this.router.get(
       '/health',

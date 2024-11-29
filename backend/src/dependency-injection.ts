@@ -2,10 +2,6 @@ import { App } from './app';
 import { ENV } from './config/env.config';
 import { Database, db } from './database';
 import { Server } from './server';
-import { Jwt } from './utils/jwt';
-import { PasswordHasher } from './utils/password-hasher';
-import { UserRepository } from './database/repository/user.repository';
-import { AuthController } from './controller/auth.controller';
 import { HealthController } from './controller/health.controller';
 import { Routes } from './routes/routes';
 import { ItemsRepository } from './database/repository/items.repository';
@@ -19,21 +15,15 @@ export const DI = {} as {
   server: Server;
   routes: Routes;
   repositories: {
-    user: UserRepository;
     items: ItemsRepository;
     shoppingLists: ShoppingListsRepository;
     //todo hier repository
   };
   controllers: {
-    auth: AuthController;
     health: HealthController;
     items: ItemsController;
     shoppingLists: ShoppingListsController;
     //todo hier controller
-  };
-  utils: {
-    passwordHasher: PasswordHasher;
-    jwt: Jwt;
   };
 };
 
@@ -43,27 +33,13 @@ export function initializeDependencyInjection(): void {
   // Initialize database
   DI.db = db;
 
-  DI.utils = {
-    passwordHasher: new PasswordHasher(10),
-    jwt: new Jwt(ENV.JWT_SECRET, {
-      expiresIn: 3600,
-      issuer: 'http://fwe.auth', // TODO unser Server
-    }),
-  };
-
   DI.repositories = {
-    user: new UserRepository(DI.db),
     items: new ItemsRepository(DI.db),
     shoppingLists: new ShoppingListsRepository(DI.db),
     //todo hier repository
   };
 
   DI.controllers = {
-    auth: new AuthController(
-      DI.repositories.user,
-      DI.utils.passwordHasher,
-      DI.utils.jwt,
-    ),
     health: new HealthController(), //todo hier auch die anderen Controller hinzufügen
     items: new ItemsController(DI.repositories.items),
     shoppingLists: new ShoppingListsController(
@@ -74,7 +50,6 @@ export function initializeDependencyInjection(): void {
 
   // Initialize appRoutes
   DI.routes = new Routes(
-    DI.controllers.auth,
     DI.controllers.health,
     DI.controllers.items,
     DI.controllers.shoppingLists,

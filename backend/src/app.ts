@@ -3,7 +3,6 @@ import { globalErrorHandler } from './utils/global-error';
 import { Routes } from './routes/routes';
 import helmet from 'helmet';
 import cors from 'cors';
-import { prepareAuthentication } from './middleware/auth.middleware'; //todo prüfen
 
 export class App {
   private app: Application;
@@ -23,7 +22,6 @@ export class App {
     this.app.use(helmet());
     this.app.use(cors({ origin: 'http://localhost:5173' }));
     this.app.use(express.json());
-    this.app.use(prepareAuthentication);
 
     this.app.use((req, _res, next) => {
       console.info(`New request to ${req.method} ${req.url}`);

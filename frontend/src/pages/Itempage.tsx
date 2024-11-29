@@ -1,4 +1,3 @@
-// frontend/src/pages/Itempage.tsx
 import { useEffect, useState } from "react";
 import { AllItemsEntryTable } from "./components/AllItemsEntryTable";
 import { Item } from "../adapter/api/__generated";
