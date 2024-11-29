@@ -38,6 +38,8 @@ const ItemPage = () => {
       const error = err as { response?: { status?: number } };
       if (error.response && error.response.status === 409) {
         showToast("An item with the same name already exists", "warn");
+      } else if (error.response && error.response.status === 400) {
+        showToast("Item name cannot be empty", "warn");
       } else {
         showToast("Failed to update item", "error");
       }
@@ -75,9 +77,9 @@ const ItemPage = () => {
       if (error.response && error.response.status === 409) {
         showToast("An item with the same name already exists", "warn");
       } else if (error.response && error.response.status === 400) {
-        showToast("Item name can not be empty", "warn");
+        showToast("Item name cannot be empty", "warn");
       } else {
-        setError("Failed to add items");
+        showToast("Failed to add items", "error");
       }
     }
   };

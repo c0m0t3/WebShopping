@@ -175,7 +175,7 @@ export const HomePage = () => {
         </Select>
         {searchType === "name" && (
           <Input
-            placeholder="Search by name"
+            placeholder="Search by name or description"
             value={searchName}
             onChange={handleSearchName}
             mr={2}
