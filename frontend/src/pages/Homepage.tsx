@@ -6,6 +6,9 @@ import { CreateShoppingListModal } from "./components/CreateShoppingListModal.ts
 import { Item, ShoppingList } from "../adapter/api/__generated";
 import { ShoppingListTable } from "./components/ShoppingListEntryTable.tsx";
 import { useNavigate } from "react-router-dom";
+import { showToast } from "../utils/toastUtils.ts";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 export const HomePage = () => {
   const { isOpen, onOpen, onClose: originalOnClose } = useDisclosure();
@@ -44,9 +47,21 @@ export const HomePage = () => {
   }, [onLoadData, client]);
 
   const onCreateList = async (data: any) => {
-    await client.createShoppingList(data);
-    await onLoadData();
-    originalOnClose();
+    try {
+      await client.createShoppingList(data);
+      await onLoadData();
+      originalOnClose();
+    } catch (err: any) {
+      if (err.response && err.response.status === 400) {
+        showToast(
+          "Failed to create shopping list, a name is required",
+          "error",
+        );
+      } else {
+        showToast("Failed to create shopping list", "error");
+      }
+      console.error("Failed to create shopping list", err);
+    }
   };
 
   const onDeleteShoppingList = async (list: ShoppingList) => {
@@ -182,7 +197,7 @@ export const HomePage = () => {
             onOpen();
           }}
         >
-          Neue Einkaufsliste erstellen
+          Create new shopping list
         </Button>
         <CreateShoppingListModal
           initialValues={
@@ -215,6 +230,7 @@ export const HomePage = () => {
           onClickViewDetails={onClickViewDetails}
         />
       </Box>
+      <ToastContainer />
     </BaseLayout>
   );
 };
