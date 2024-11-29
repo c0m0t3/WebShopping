@@ -38,6 +38,12 @@ export class ItemsRepository {
   }
 
   async createItems(data: { name: string; description?: string }[]) {
+    data.forEach((item) => {
+      if (item.name === '') {
+        throw new Error('Item name can not be empty');
+      }
+    });
+
     const itemNames = data.map((item) => item.name);
     const existingItemNames = await this.checkItemsExist(itemNames);
 
@@ -85,6 +91,19 @@ export class ItemsRepository {
 
     if (!existingItem) {
       return null;
+    }
+
+    if (data.name === '') {
+      throw new Error('Item name cannot be empty');
+    }
+
+    const itemWithSameName = await this.database.query.items.findFirst({
+      where: (items, { and, eq, ne }) =>
+        and(eq(items.name, data.name), ne(items.id, id)),
+    });
+
+    if (itemWithSameName) {
+      throw new Error('An item with the same name already exists');
     }
 
     return this.database

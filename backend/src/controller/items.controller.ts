@@ -24,13 +24,22 @@ export class ItemsController {
   }
 
   async createItems(req: Request, res: Response): Promise<void> {
-    const createdItems = await this.itemRepository.createItems(req.body);
-    if (createdItems.length === 0) {
-      res
-        .status(409)
-        .send('No new items were created because they already exist.');
-    } else {
-      res.status(201).send(createdItems);
+    try {
+      const createdItems = await this.itemRepository.createItems(req.body);
+      if (createdItems.length === 0) {
+        res
+          .status(409)
+          .send('No new items were created because they already exist.');
+      } else {
+        res.status(201).send(createdItems);
+      }
+    } catch (error) {
+      const err = error as Error;
+      if (err.message === 'Item name can not be empty') {
+        res.status(400).send({ error: err.message });
+      } else {
+        res.status(500).send('Internal Server Error');
+      }
     }
   }
 
@@ -65,14 +74,25 @@ export class ItemsController {
       res.status(400).send({ error: 'Invalid UUID' });
       return;
     }
-    const updatedItem = await this.itemRepository.updateItem(
-      req.params.id,
-      req.body,
-    );
-    if (!updatedItem) {
-      res.status(404).send('Item not found');
-      return;
+    try {
+      const updatedItem = await this.itemRepository.updateItem(
+        req.params.id,
+        req.body,
+      );
+      if (!updatedItem) {
+        res.status(404).send('Item not found');
+        return;
+      }
+      res.status(200).send(updatedItem);
+    } catch (error) {
+      const err = error as Error;
+      if (err.message === 'An item with the same name already exists') {
+        res.status(409).send({ error: err.message });
+      } else if (err.message === 'Item name cannot be empty') {
+        res.status(400).send({ error: err.message });
+      } else {
+        res.status(500).send('Internal Server Error');
+      }
     }
-    res.status(200).send(updatedItem);
   }
 }
