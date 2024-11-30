@@ -1,42 +1,48 @@
 import type { Database } from '..';
 import { CreateItem } from '../../validation/validation';
 import { items } from '../schema/items.schema';
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray, ne, or } from 'drizzle-orm';
 
 export class ItemsRepository {
   constructor(private readonly database: Database) {}
 
+  // Check if items exist by names
   async checkItemsExist(names: string[]): Promise<string[]> {
     const existingItems = await this.database.query.items.findMany({
-      where: (items, { inArray }) => inArray(items.name, names),
+      where: (items) => inArray(items.name, names),
     });
     return existingItems.map((item) => item.name);
   }
 
+  // Get item by ID
   async getItemById(id: string) {
     const item = await this.database.query.items.findFirst({
-      where: (items, { eq }) => eq(items.id, id),
+      where: (items) => eq(items.id, id),
     });
     return item || null;
   }
 
+  // Get items by IDs
   async getItemsById(ids: string[]) {
     return this.database.query.items.findMany({
-      where: (items, { inArray }) => inArray(items.id, ids),
+      where: (items) => inArray(items.id, ids),
     });
   }
 
+  // Get all items
   async getItems() {
     return this.database.query.items.findMany();
   }
 
+  // Get items by names or IDs
   async getItemsByNamesOrIds(names: string[], ids: string[]) {
     return this.database.query.items.findMany({
-      where: (items, { and, or, inArray }) =>
+      where: (items) =>
         and(or(inArray(items.id, ids), inArray(items.name, names))),
     });
   }
 
+  // Create new items
   async createItems(data: { name: string; description?: string }[]) {
     data.forEach((item) => {
       if (item.name === '') {
@@ -62,16 +68,16 @@ export class ItemsRepository {
     });
   }
 
+  // Check if item is on a shopping list
   async isItemOnShoppingList(itemId: string): Promise<boolean> {
     const shoppingListItem =
       await this.database.query.shoppingListItems.findFirst({
-        where: (shoppingListItems, { eq }) =>
-          eq(shoppingListItems.itemId, itemId),
+        where: (shoppingListItems) => eq(shoppingListItems.itemId, itemId),
       });
     return !!shoppingListItem;
   }
 
-  // Update the deleteItemFromDatabase method
+  // Delete item from database
   async deleteItemFromDatabase(id: string) {
     const existingItem = await this.getItemById(id);
 
@@ -86,6 +92,7 @@ export class ItemsRepository {
     return this.database.delete(items).where(eq(items.id, id));
   }
 
+  // Update item by ID
   async updateItem(id: string, data: CreateItem) {
     const existingItem = await this.getItemById(id);
 
@@ -98,8 +105,7 @@ export class ItemsRepository {
     }
 
     const itemWithSameName = await this.database.query.items.findFirst({
-      where: (items, { and, eq, ne }) =>
-        and(eq(items.name, data.name), ne(items.id, id)),
+      where: (items) => and(eq(items.name, data.name), ne(items.id, id)),
     });
 
     if (itemWithSameName) {
