@@ -26,6 +26,17 @@ const ColorModeToggle = () => {
 export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
   const location = useLocation();
   const isOnItemsPage = location.pathname === "/items";
+  const isOnBarcodePage = location.pathname === "/barcode";
+  const isOnDetailView = location.pathname.startsWith("/detail/");
+
+  let pageTitle = "Home";
+  if (isOnItemsPage) {
+    pageTitle = "Items";
+  } else if (isOnBarcodePage) {
+    pageTitle = "Barcode";
+  } else if (isOnDetailView) {
+    pageTitle = "Shopping List Details";
+  }
 
   return (
     <Box
@@ -37,8 +48,9 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
     >
       <HStack p={4} bg={"teal.400"}>
         <a href={"/"}>FWE 24/25</a>
-        <Box flex={1}></Box>
-
+        <Box flex={1} textAlign="center" fontWeight="bold">
+          {pageTitle}
+        </Box>
         <Box gap={4} display={"flex"}>
           <Link to={isOnItemsPage ? "/" : "/items"}>
             <Button>{isOnItemsPage ? "ShoppingList" : "Items"}</Button>
