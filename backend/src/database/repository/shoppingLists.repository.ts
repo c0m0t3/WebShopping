@@ -2,61 +2,55 @@ import type { Database } from '..';
 import { CreateShoppingList } from '../../validation/validation';
 import { shoppingLists } from '../schema/shoppingLists.schema';
 import { shoppingListItems } from '../schema/shoppingListItems.schema';
-import { and, eq } from 'drizzle-orm';
+import { and, eq, like, or } from 'drizzle-orm';
 
 export class ShoppingListsRepository {
   constructor(private readonly database: Database) {}
 
-  async clear() {
+  // Clear all shopping lists and items
+  async clear(): Promise<void> {
     await this.database.delete(shoppingListItems).execute();
     await this.database.delete(shoppingLists).execute();
   }
 
+  // Check if a shopping list exists by name
   async shoppingListExistsByName(name: string): Promise<boolean> {
     const result = await this.database.query.shoppingLists.findFirst({
-      where: (shoppingLists, { eq }) => eq(shoppingLists.name, name),
+      where: (shoppingLists) => eq(shoppingLists.name, name),
     });
     return !!result;
   }
 
+  // Get shopping list by ID
   async getShoppingListById(id: string) {
     const shoppingList = await this.database.query.shoppingLists.findFirst({
-      where: (itemLists, { eq }) => eq(itemLists.id, id),
+      where: (shoppingLists) => eq(shoppingLists.id, id),
     });
     return shoppingList || null;
   }
 
+  // Get all shopping lists
   async getShoppingLists(includeRelations = false) {
-    //console.log("getShoppingLists in repository called");
-    //try {
     const queryConfig = {
       with: includeRelations
         ? {
             shoppingListItems: {
               select: {
                 quantity: true,
-                is_purchased: true,
+                isPurchased: true,
               },
             },
           }
         : undefined,
     };
-    //console.log("Generated query config:", queryConfig);
-    const result =
-      await this.database.query.shoppingLists.findMany(queryConfig);
-    //console.log("Query result:", result);
-    return result;
-    // } catch (error) {
-    //   //console.error("Detailed error:", error);  // Detailliertere Fehlerausgabe
-    //   throw new Error("Error fetching shopping lists");
-    // }
+    return this.database.query.shoppingLists.findMany(queryConfig);
   }
 
+  // Create a new shopping list
   async createShoppingList(data: CreateShoppingList) {
-    // Check if the shopping list already exists by name
     const existingShoppingList =
       await this.database.query.shoppingLists.findFirst({
-        where: (shoppingLists, { eq }) => eq(shoppingLists.name, data.name),
+        where: (shoppingLists) => eq(shoppingLists.name, data.name),
       });
 
     if (existingShoppingList) {
@@ -67,8 +61,8 @@ export class ShoppingListsRepository {
       .insert(shoppingLists)
       .values({
         ...data,
-        description: data.description ?? '', // Provide a default value if description is undefined
-        store: data.store ?? '', // Provide a default value if store is undefined
+        description: data.description ?? '',
+        store: data.store ?? '',
       })
       .returning({
         id: shoppingLists.id,
@@ -80,6 +74,7 @@ export class ShoppingListsRepository {
     return createdShoppingList;
   }
 
+  // Delete shopping list by ID
   async deleteShoppingList(id: string): Promise<number> {
     const result = await this.database
       .delete(shoppingLists)
@@ -87,6 +82,7 @@ export class ShoppingListsRepository {
     return result.rowCount ?? 0; // Provide a default value of 0 if rowCount is null
   }
 
+  // Update shopping list by ID
   async updateShoppingList(id: string, data: CreateShoppingList) {
     const result = await this.database
       .update(shoppingLists)
@@ -100,13 +96,14 @@ export class ShoppingListsRepository {
     return (result.rowCount ?? 0) > 0 ? result : null;
   }
 
+  // Associate items with shopping list
   async associateItemsWithShoppingList(
     shoppingListId: string,
     items: { itemId: string; quantity?: number }[],
   ) {
     const shoppingListExists =
       await this.database.query.shoppingLists.findFirst({
-        where: (shoppingLists, { eq }) => eq(shoppingLists.id, shoppingListId),
+        where: (shoppingLists) => eq(shoppingLists.id, shoppingListId),
       });
 
     if (!shoppingListExists) {
@@ -116,7 +113,7 @@ export class ShoppingListsRepository {
     for (const item of items) {
       const existingItem =
         await this.database.query.shoppingListItems.findFirst({
-          where: (shoppingListItems, { and, eq }) =>
+          where: (shoppingListItems) =>
             and(
               eq(shoppingListItems.shoppingListId, shoppingListId),
               eq(shoppingListItems.itemId, item.itemId),
@@ -145,9 +142,10 @@ export class ShoppingListsRepository {
     }
   }
 
+  // Remove item from shopping list
   async removeItemFromShoppingList(shoppingListId: string, itemId: string) {
     const existingItem = await this.database.query.shoppingListItems.findFirst({
-      where: (shoppingListItems, { and, eq }) =>
+      where: (shoppingListItems) =>
         and(
           eq(shoppingListItems.shoppingListId, shoppingListId),
           eq(shoppingListItems.itemId, itemId),
@@ -168,6 +166,7 @@ export class ShoppingListsRepository {
       );
   }
 
+  // Update shopping list items
   async updateShoppingListItems(
     shoppingListId: string,
     itemId: string,
@@ -192,26 +191,27 @@ export class ShoppingListsRepository {
       );
   }
 
+  // Get items from shopping list
   async getShoppingListItems(shoppingListId: string) {
     const shoppingListExists =
       await this.database.query.shoppingLists.findFirst({
-        where: (shoppingLists, { eq }) => eq(shoppingLists.id, shoppingListId),
+        where: (shoppingLists) => eq(shoppingLists.id, shoppingListId),
       });
 
     if (!shoppingListExists) {
       return null;
     }
 
-    const items = await this.database.query.shoppingListItems.findMany({
-      where: (items, { eq }) => eq(items.shoppingListId, shoppingListId),
+    return this.database.query.shoppingListItems.findMany({
+      where: (shoppingListItems) =>
+        eq(shoppingListItems.shoppingListId, shoppingListId),
     });
-
-    return items;
   }
 
+  // Search shopping lists
   async searchShoppingLists(query: string) {
     return this.database.query.shoppingLists.findMany({
-      where: (shoppingLists, { or, like }) =>
+      where: (shoppingLists) =>
         or(
           like(shoppingLists.name, `%${query}%`),
           like(shoppingLists.description, `%${query}%`),
@@ -219,34 +219,35 @@ export class ShoppingListsRepository {
     });
   }
 
+  // Search shopping lists by item
   async searchShoppingListsByItem(itemId: string) {
     return this.database.query.shoppingListItems.findMany({
-      where: (items, { eq }) => eq(items.itemId, itemId),
+      where: (shoppingListItems) => eq(shoppingListItems.itemId, itemId),
     });
   }
 
+  // Get store associated with shopping list
   async getShoppingListStore(id: string) {
     const shoppingList = await this.database.query.shoppingLists.findFirst({
-      where: (shoppingLists, { eq }) => eq(shoppingLists.id, id),
+      where: (shoppingLists) => eq(shoppingLists.id, id),
     });
     return shoppingList?.store;
   }
 
+  // Set store for shopping list
   async setShoppingListStore(id: string, store: string) {
     const result = await this.database
       .update(shoppingLists)
-      .set({
-        store,
-      })
+      .set({ store })
       .where(eq(shoppingLists.id, id));
 
     return (result.rowCount ?? 0) > 0 ? result : null;
   }
 
+  // Get shopping lists by store
   async getShoppingListsByStore(store: string) {
     return this.database.query.shoppingLists.findMany({
-      where: (shoppingLists, { like }) =>
-        like(shoppingLists.store, `%${store}%`),
+      where: (shoppingLists) => like(shoppingLists.store, `%${store}%`),
     });
   }
 }
