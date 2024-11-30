@@ -62,7 +62,7 @@ Node.js, TypeScript, Express, PostgreSQL
 git clone <repository-url>
 cd <projektordner>
 npm install
-npm run start
+npm start
 ```
 
 ## API-Referenz
