@@ -11,10 +11,6 @@ Zusätzlich sind zwei Freestyle Tasks implementiert, die die Anwendung um zusät
 Das Projekt wurde im Rahmen des Moduls "Fortgeschrittene Webentwicklung" an der Hochschule Darmstadt erstellt. Es dient
 dazu, die im Modul erlernten Technologien und Konzepte in einem praxisnahen Projekt anzuwenden.
 
-## Code Style
-
-Der Code folgt den Airbnb JavaScript Style Guidelines.
-
 ## Tech/Framework
 
 Node.js, TypeScript, Express, PostgreSQL
@@ -43,6 +39,19 @@ Node.js, TypeScript, Express, PostgreSQL
 - Eingeben des Barcodes in die Suchleiste
 - Anzeige des gefundenen Artikels
 - Hinzufügen des Artikels als Item in die Datenbank
+
+## Anleitung zu Nutzung
+
+- Items erstellen -> In Leiste auf Items klicken
+- Einkaufsliste erstellen -> In Leiste auf ShoppingLists klicken
+- Einkaufsliste anklicken -> DetailView
+- Items zu Einkaufsliste hinzufügen
+- Quantity und Purchased ändern durch anklicken bei entsprechendem Item
+- Suche auf Homepage nach Namen, Beschreibung oder auf Store umstellen
+- Suche nach Item -> Toggle Menü mit allen existierenden Items
+- Barcode anklicken -> Barcode eingeben -> Item hinzufügen
+- Klick auf FWE 24/25 -> Wechsel auf Homepage
+- Klick auf Sonne/Mond -> Wechsel zwischen Dark und Light Mode
 
 ## Installation & Setup
 
@@ -109,6 +118,7 @@ npm run start
 ## Fehlerbehandlung
 
 - Gültigkeit der Eingabedaten prüfen
+- Abfangen von doppelten oder leeren Namen
 - Fehler bei leeren oder inkorrekten Feldern abfangen
 - Korrekte HTTP-Statuscodes verwenden
 
