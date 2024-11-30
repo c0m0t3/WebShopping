@@ -11,10 +11,6 @@ Zusätzlich sind zwei Freestyle Tasks implementiert, die die Anwendung um zusät
 Das Projekt wurde im Rahmen des Moduls "Fortgeschrittene Webentwicklung" an der Hochschule Darmstadt erstellt. Es dient
 dazu, die im Modul erlernten Technologien und Konzepte in einem praxisnahen Projekt anzuwenden.
 
-## Build-Status
-
-[![Build Status](https://travis-ci.com/c0m0t3/repo.svg?branch=master)](https://travis-ci.com/c0m0t3/repo)
-
 ## Code Style
 
 Der Code folgt den Airbnb JavaScript Style Guidelines.
@@ -108,7 +104,7 @@ npm run start
 
 - Automatisierte Tests: Jest
 - Zum Ausführen der Tests: `npm run test`
-- Manuelle Tests: Postman oder curl
+- Manuelle Tests: Postman
 
 ## Fehlerbehandlung
 
@@ -125,3 +121,7 @@ npm run start
 
 - Coding-Standards: Einheitliche Syntax, Kommentare, konsistente Namenskonventionen
 - `.gitignore`: `node_modules`, environment files und API-Keys ausschließen
+
+## Contributors
+
+- Colin Moissl

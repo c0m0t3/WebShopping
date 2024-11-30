@@ -35,11 +35,8 @@ export class ShoppingListsController {
     res.status(200).send(shoppingLists);
   }
 
-  // In ShoppingListsController
   async createShoppingList(req: Request, res: Response): Promise<void> {
     let validatedData = null;
-    //TODO fix irgendwie
-    //const validatedData = createShoppingListZodSchema.parse(req.body); //eigentlich richtiger weg aber jest sagt nein
     try {
       validatedData = createShoppingListZodSchema.parse(req.body);
     } catch (e) {
@@ -152,8 +149,6 @@ export class ShoppingListsController {
       res.status(400).send({ error: 'Invalid UUID' });
       return;
     }
-    //console.log(req.body);
-    // const validatedData = associateItemsWithShoppingListSchema.parse(req.body); //TODO fix irgendwie
     let validatedData = null;
     try {
       validatedData = associateItemsWithShoppingListSchema.parse(req.body);
