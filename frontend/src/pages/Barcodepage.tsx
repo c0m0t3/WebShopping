@@ -53,8 +53,19 @@ const BarcodePage = () => {
   const handleCreateItem = async () => {
     try {
       await client.createItem([itemData]);
-      alert("Item created successfully!");
-    } catch (err) {
+      showToast("Item created successfully", "success");
+    } catch (err: any) {
+      if (err.response) {
+        if (err.response.status === 409) {
+          showToast("Item already exists", "error");
+        } else if (err.response.status === 400) {
+          showToast("Invalid item data", "error");
+        } else {
+          showToast("Failed to create item", "error");
+        }
+      } else {
+        showToast("Failed to create item", "error");
+      }
       console.error("Failed to create item", err);
     }
   };
