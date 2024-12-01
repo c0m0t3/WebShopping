@@ -24,7 +24,7 @@ describe('ItemsRepository Integration Tests', () => {
 
   describe('getItemById', () => {
     it('should return an item by ID', async () => {
-      const test_id = (await repository.getItems())[0].id;
+      const test_id = (await repository.getItems())[0].id as string;
       const item = await repository.getItemById(test_id);
       expect(item).toEqual({
         id: test_id,
@@ -115,7 +115,7 @@ describe('ItemsRepository Integration Tests', () => {
 
   describe('deleteItemFromDatabase', () => {
     it('should delete an item by ID', async () => {
-      const test_id = (await repository.getItems())[0].id;
+      const test_id = (await repository.getItems())[0].id as string;
       const deletedItem = await repository.deleteItemFromDatabase(test_id);
       expect(deletedItem).toBeTruthy();
       const item = await repository.getItemById(test_id);
@@ -132,7 +132,7 @@ describe('ItemsRepository Integration Tests', () => {
 
   describe('updateItem', () => {
     it('should update an item by ID', async () => {
-      const test_id = (await repository.getItems())[0].id;
+      const test_id = (await repository.getItems())[0].id as string;
       const updatedItem = await repository.updateItem(test_id, {
         name: 'Updated Test Item 1',
         description: 'Updated Description for Test Item 1',
@@ -158,7 +158,7 @@ describe('ItemsRepository Integration Tests', () => {
     });
 
     it('should throw an error if fields are empty', async () => {
-      const test_id = (await repository.getItems())[0].id;
+      const test_id = (await repository.getItems())[0].id as string;
       await expect(
         repository.updateItem(test_id, { name: '', description: '' }),
       ).rejects.toThrow('Item name cannot be empty');

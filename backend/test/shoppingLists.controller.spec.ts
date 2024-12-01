@@ -141,7 +141,7 @@ describe('ShoppingListsController', () => {
       shoppingLists[0].id,
       [
         {
-          itemId: items[0].id,
+          itemId: items[0].id as string,
           quantity: 1,
         },
       ],
@@ -325,7 +325,7 @@ describe('ShoppingListsController', () => {
 
       await shoppingListsRepository.associateItemsWithShoppingList(
         shoppingListId,
-        [{ itemId: itemId, quantity: 1 }],
+        [{ itemId: itemId as string, quantity: 1 }],
       );
 
       const response = await request(app).delete(
@@ -567,7 +567,7 @@ describe('ShoppingListsController', () => {
 
     beforeEach(async () => {
       const items = await itemsRepository.getItems();
-      itemId = items[0].id;
+      itemId = items[0].id as string;
     });
 
     it('should search shopping lists by item', async () => {
