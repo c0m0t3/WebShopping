@@ -17,13 +17,11 @@ export const DI = {} as {
   repositories: {
     items: ItemsRepository;
     shoppingLists: ShoppingListsRepository;
-    //todo hier repository
   };
   controllers: {
     health: HealthController;
     items: ItemsController;
     shoppingLists: ShoppingListsController;
-    //todo hier controller
   };
 };
 
@@ -36,11 +34,10 @@ export function initializeDependencyInjection(): void {
   DI.repositories = {
     items: new ItemsRepository(DI.db),
     shoppingLists: new ShoppingListsRepository(DI.db),
-    //todo hier repository
   };
 
   DI.controllers = {
-    health: new HealthController(), //todo hier auch die anderen Controller hinzufügen
+    health: new HealthController(),
     items: new ItemsController(DI.repositories.items),
     shoppingLists: new ShoppingListsController(
       DI.repositories.shoppingLists,

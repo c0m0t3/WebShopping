@@ -17,24 +17,68 @@ Node.js, TypeScript, Express, PostgreSQL
 
 ## Installation & Setup
 
-1. Voraussetzungen: Node.js, npm/yarn, Datenbank/Docker
+1. Voraussetzungen: Node.js, npm/yarn, Datenbank/Docker, Git
 2. Schritte:
 
+- Repository klonen
+
 ```bash
-git clone <repository-url>
+git clone https://code.fbi.h-da.de/stcomoiss/fwe-ws-24-25-111071.git
 cd <projektordner>
 ```
 
-- IDE öffnen
-- .env Datei von .env.example kopieren im backend Ordner
-- ```npm install``` in jeweils den Ordnern "WebShopping", "backend" und "frontend" ausführen
-- ```npm run generate:api``` in frontend Ordner ausführen
-- ```tsc``` in backend Ordner ausführen (falls nicht -> ```npm uninstall typescript``` und dann
-  ```npm install -g typescript```)
-- ```docker-compose up``` in backend Ordner ausführen
-- ```npm run db:generate``` in backend Ordner ausführen
-- ```npm run db:migrate``` in backend Ordner ausführen
-- ```npm start``` im Wurzelverzeichnis ausführen
+1. Datei ".env" im backend Ordner erstellen
+2. Inhalt der .env.example Datei kopieren und in die .env Datei einfügen
+3. Dependencies installieren:
+
+```bash
+npm install 
+cd frontend
+npm install
+cd ..
+cd backend
+npm install
+cd ..
+```
+
+4. Erzeugen der API-Dateien:
+
+```bash
+cd frontend
+npm run generate:api
+```
+
+5. TypeScript-Dateien kompilieren:
+
+```bash
+cd backend
+tsc
+```
+
+5.2 Falls tsc nicht gefunden wird:
+
+```bash
+npm uninstall typescript
+npm install -g typescript
+```
+
+6. Docker-Container starten:
+
+```bash
+docker-compose up
+```
+
+7. Datenbank migrieren und generieren:
+
+```bash
+npm run db:generate
+npm run db:migrate
+```
+
+8. Starten der Anwendung:
+
+- ```npm start``` im Wurzelverzeichnis
+- Anklicken des Links in der Konsole
 
 ## Features
 
@@ -78,50 +122,137 @@ cd <projektordner>
 
 ### Health
 
-- **GET /health**: Gesundheitsstatus der Anwendung abrufen
+- **GET /health**
+    - **Description**: Retrieves the health status of the application.
+    - **Response**: 200 OK, health status.
 
 ### Items
 
-- **GET /items/:id**: Einzelnes Item nach ID abrufen
-- **GET /items**: Alle Items abrufen
-- **POST /items**: Neue Items erstellen
-- **DELETE /items/:id**: Item nach ID löschen
-- **PUT /items/:id**: Item nach ID aktualisieren
+- **GET /items/:id**
+    - **Description**: Retrieves a single item by its ID.
+    - **Response**: 200 OK, item object.
+    - **Errors**: 404 Not Found.
 
-### Einkaufslisten
+- **GET /items**
+    - **Description**: Retrieves all items.
+    - **Response**: 200 OK, array of items.
 
-- **GET /shoppingLists/:id**: Einzelne Einkaufsliste nach ID abrufen
-- **GET /shoppingLists**: Alle Einkaufslisten abrufen
-- **POST /shoppingLists**: Neue Einkaufsliste erstellen
-- **DELETE /shoppingLists/:id**: Einkaufsliste nach ID löschen
-- **PUT /shoppingLists/:id**: Einkaufsliste nach ID aktualisieren
+- **POST /items**
+    - **Description**: Creates new items.
+    - **Response**: 201 Created, item object.
+    - **Errors**: 400 Bad Request.
 
-### Einkaufslisten-Items
+- **DELETE /items/:id**
+    - **Description**: Deletes an item by its ID.
+    - **Response**: 204 No Content.
+    - **Errors**: 404 Not Found.
 
-- **POST /shoppingLists/:id/items**: Items mit Einkaufsliste verknüpfen
-- **DELETE /shoppingLists/:id/items/:itemId**: Item aus Einkaufsliste entfernen
-- **GET /shoppingLists/:id/items**: Items einer Einkaufsliste abrufen
-- **PUT /shoppingLists/:id/items/:itemId**: Items einer Einkaufsliste aktualisieren
+- **PUT /items/:id**
+    - **Description**: Updates an item by its ID.
+    - **Response**: 200 OK, item object.
+    - **Errors**: 400 Bad Request, 404 Not Found.
 
-### Spezielle Routen
+### Shopping Lists
 
-- **GET /shoppingLists/search/search**: Einkaufslisten nach Name/Beschreibung durchsuchen
-- **GET /shoppingLists/search/:id**: Einkaufslisten nach Item durchsuchen
+- **GET /shoppingLists/:id**
+    - **Description**: Retrieves a single shopping list by its ID.
+    - **Response**: 200 OK, shopping list object.
+    - **Errors**: 404 Not Found.
+
+- **GET /shoppingLists**
+    - **Description**: Retrieves all shopping lists.
+    - **Response**: 200 OK, array of shopping lists.
+
+- **POST /shoppingLists**
+    - **Description**: Creates a new shopping list.
+    - **Response**: 201 Created, shopping list object.
+    - **Errors**: 400 Bad Request.
+
+- **DELETE /shoppingLists/:id**
+    - **Description**: Deletes a shopping list by its ID.
+    - **Response**: 204 No Content.
+    - **Errors**: 404 Not Found.
+
+- **PUT /shoppingLists/:id**
+    - **Description**: Updates a shopping list by its ID.
+    - **Response**: 200 OK, shopping list object.
+    - **Errors**: 400 Bad Request, 404 Not Found.
+
+### Shopping List Items
+
+- **POST /shoppingLists/:id/items**
+    - **Description**: Adds items to a shopping list.
+    - **Response**: 201 Created.
+    - **Errors**: 400 Bad Request, 404 Not Found.
+
+- **DELETE /shoppingLists/:id/items/:itemId**
+    - **Description**: Removes an item from a shopping list.
+    - **Response**: 204 No Content.
+    - **Errors**: 404 Not Found.
+
+- **GET /shoppingLists/:id/items**
+    - **Description**: Retrieves items of a shopping list.
+    - **Response**: 200 OK, array of items.
+    - **Errors**: 404 Not Found.
+
+- **PUT /shoppingLists/:id/items/:itemId**
+    - **Description**: Updates an item in a shopping list.
+    - **Response**: 200 OK, item object.
+    - **Errors**: 400 Bad Request, 404 Not Found.
+
+### Special Routes
+
+- **GET /shoppingLists/search/search**
+    - **Description**: Searches shopping lists by name or description.
+    - **Response**: 200 OK, array of shopping lists.
+    - **Errors**: 400 Bad Request.
+
+- **GET /shoppingLists/search/:id**
+    - **Description**: Searches shopping lists by item.
+    - **Response**: 200 OK, array of shopping lists.
+    - **Errors**: 404 Not Found.
 
 ### Store
 
-- **GET /shoppingLists/store/store**: Einkaufslisten nach Store abrufen
-- **GET /shoppingLists/:id/store**: Store einer Einkaufsliste abrufen
-- **PUT /shoppingLists/:id/store**: Store einer Einkaufsliste setzen
+- **GET /shoppingLists/store/store**
+    - **Description**: Retrieves shopping lists by store.
+    - **Response**: 200 OK, array of shopping lists.
+    - **Errors**: 404 Not Found.
+
+- **GET /shoppingLists/:id/store**
+    - **Description**: Retrieves the store of a shopping list.
+    - **Response**: 200 OK, store object.
+    - **Errors**: 404 Not Found.
+
+- **PUT /shoppingLists/:id/store**
+    - **Description**: Sets the store of a shopping list.
+    - **Response**: 200 OK, store object.
+    - **Errors**: 400 Bad Request, 404 Not Found.
 
 ### Barcode
 
-- **GET /products/lookup**: Produkt nach Barcode suchen
+- **GET /products/lookup**
+    - **Description**: Retrieves product information by barcode.
+    - **Response**: 200 OK, product information.
+    - **Errors**: 404 Not Found.
 
 ## Tests
 
 - Automatisierte Tests: Jest
-- Zum Ausführen der Tests: `npm run test` im backend Ordner
+- Zum Ausführen der Tests:
+
+```bash
+cd backend
+npm run test
+```
+
+- Für Coverage:
+
+```bash
+cd backend
+npm run test:coverage
+```
+
 - Manuelle Tests: Postman
 
 ## Fehlerbehandlung

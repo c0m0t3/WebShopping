@@ -14,7 +14,7 @@ import { Box, Heading, Text } from "@chakra-ui/react";
 const DetailView: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   if (!id) {
-    return <div>There is no ID</div>; //TODO: Add a proper error handling
+    throw new Error("Invalid shopping list ID");
   }
   const client = useApiClient();
   const [shoppingList, setShoppingList] = useState<ShoppingList | null>(null);

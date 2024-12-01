@@ -3,13 +3,10 @@ import { HealthController } from '../controller/health.controller';
 import { ItemsController } from '../controller/items.controller';
 import { ShoppingListsController } from '../controller/shoppingLists.controller';
 
-//todo hier kommen die Controller der Klassen hin
-
 export class Routes {
   private router: Router;
 
   constructor(
-    //todo hier auch die anderen Controller hinzufügen
     private readonly healthController: HealthController,
     private readonly itemsController: ItemsController,
     private readonly ShoppingListsController: ShoppingListsController,
