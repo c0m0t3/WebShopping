@@ -55,7 +55,7 @@ cd backend
 tsc
 ```
 
-5.2 Falls tsc nicht gefunden wird:
+**Hinweis**: Falls tsc nicht gefunden wird, folgende Befehle ausführen:
 
 ```bash
 npm uninstall typescript
