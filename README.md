@@ -63,10 +63,12 @@ git clone <repository-url>
 cd <projektordner>
 ```
 
-- .env Datei von .env.example kopieren
-- ```npm install``` in jeweils den Ordnern "backend" und "frontend" ausführen
-- ```npm generate:api``` in frontend Ordner ausführen
-- ```tsc``` in backend Ordner ausführen
+- IDE öffnen
+- .env Datei von .env.example kopieren im backend Ordner
+- ```npm install``` in jeweils den Ordnern "WebShopping", "backend" und "frontend" ausführen
+- ```npm run generate:api``` in frontend Ordner ausführen
+- ```tsc``` in backend Ordner ausführen (falls nicht -> ```npm uninstall typescript``` und dann
+  ```npm install -g typescript```)
 - ```docker-compose up``` in backend Ordner ausführen
 - ```npm run db:generate``` in backend Ordner ausführen
 - ```npm run db:migrate``` in backend Ordner ausführen

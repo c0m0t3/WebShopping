@@ -57,6 +57,11 @@ export const HomePage = () => {
           "Failed to create shopping list, a name is required",
           "error",
         );
+      } else if (err.response && err.response.status === 409) {
+        showToast(
+          "Failed to create shopping list, a name is already in use",
+          "error",
+        );
       } else {
         showToast("Failed to create shopping list", "error");
       }
