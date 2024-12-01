@@ -58,8 +58,6 @@ Node.js, TypeScript, Express, PostgreSQL
 1. Voraussetzungen: Node.js, npm/yarn, Datenbank/Docker
 2. Schritte:
 
-- .env Datei von .env.example kopieren
-
 ```bash
 git clone <repository-url>
 cd <projektordner>
@@ -120,7 +118,7 @@ cd <projektordner>
 ## Tests
 
 - Automatisierte Tests: Jest
-- Zum Ausführen der Tests: `npm run test`
+- Zum Ausführen der Tests: `npm run test` im backend Ordner
 - Manuelle Tests: Postman
 
 ## Fehlerbehandlung
