@@ -140,4 +140,4 @@ cd <projektordner>
 
 ## Contributors
 
-- Colin Moissl :)
+- Colin Moissl
