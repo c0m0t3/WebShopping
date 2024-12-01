@@ -65,6 +65,7 @@ cd <projektordner>
 
 - .env Datei von .env.example kopieren
 - ```npm install``` in jeweils den Ordnern "backend" und "frontend" ausführen
+- ```npm generate:api``` in frontend Ordner ausführen
 - ```tsc``` in backend Ordner ausführen
 - ```docker-compose up``` in backend Ordner ausführen
 - ```npm run db:generate``` in backend Ordner ausführen
