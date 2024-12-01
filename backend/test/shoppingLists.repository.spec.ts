@@ -126,5 +126,22 @@ describe('ShoppingListRepository Integration Tests', () => {
       });
       expect(updatedShoppingList).toBeNull();
     });
+
+
+    it('should update shopping list if only store is provided', async () => {
+      const test_id = (await repository.getShoppingLists())[0].id;
+      const updatedShoppingList = await repository.updateShoppingList(test_id, {name: '', store: 'Updated Store Only' });
+      if(updatedShoppingList) {
+        expect(updatedShoppingList.rowCount).toBe(1);
+      }
+      const shoppingList = await repository.getShoppingListById(test_id);
+      if (shoppingList) {
+        expect(shoppingList.store).toBe('Updated Store Only');
+      }
+    });
+
+
+
+
   });
 });

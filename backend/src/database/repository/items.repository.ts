@@ -45,7 +45,7 @@ export class ItemsRepository {
   // Create new items
   async createItems(data: { name: string; description?: string }[]) {
     data.forEach((item) => {
-      if (item.name === '') {
+      if (!item.name || item.name === '') {
         throw new Error('Item name can not be empty');
       }
     });

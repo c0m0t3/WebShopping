@@ -98,7 +98,15 @@ export class ShoppingListsController {
       return;
     }
 
-    const validatedData = updateShoppingListZodSchema.parse(req.body);
+    let validatedData;
+    try {
+      validatedData = updateShoppingListZodSchema.parse(req.body);
+    } catch (error: unknown) {
+      console.error(error);
+      res.status(400).send({ error: 'Invalid data' });
+      return;
+    }
+
     const updatedShoppingList =
       await this.shoppingListsRepository.updateShoppingList(id, validatedData);
 

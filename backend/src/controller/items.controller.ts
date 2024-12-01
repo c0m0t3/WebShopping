@@ -86,14 +86,12 @@ export class ItemsController {
 
   // Handle errors
   private handleError(res: Response, error: Error): void {
-    if (error.message === 'Item name cannot be empty') {
+    if (error.message === 'Item name can not be empty') {
       res.status(400).send({ error: error.message });
     } else if (error.message === 'An item with the same name already exists') {
       res.status(409).send({ error: error.message });
     } else if (error.message === 'Item is associated with a shopping list') {
       res.status(409).send({ error: error.message });
-    } else {
-      res.status(500).send({ error: 'Internal Server Error' });
     }
   }
 }

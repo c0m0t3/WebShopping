@@ -29,7 +29,7 @@ export const BaseLayout = ({ children }: { children: React.ReactNode }) => {
   const isOnBarcodePage = location.pathname === "/barcode";
   const isOnDetailView = location.pathname.startsWith("/detail/");
 
-  let pageTitle = "Home";
+  let pageTitle = "Shopping Lists";
   if (isOnItemsPage) {
     pageTitle = "Items";
   } else if (isOnBarcodePage) {

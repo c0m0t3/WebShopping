@@ -114,6 +114,19 @@ describe('ItemsController', () => {
         .send([{ name: 'Test Item 1', description: 'Description for Test Item 1' }]);
       expect(response.status).toBe(409);
     });
+    it('should return a 400 if required fields are missing', async () => {
+      const response = await request(app)
+        .post('/items')
+        .send([{ description: 'Description without name' }]);
+      expect(response.status).toBe(400);
+    });
+
+    it('should return a 400 if fields are empty', async () => {
+      const response = await request(app)
+        .post('/items')
+        .send([{ name: '', description: '' }]);
+      expect(response.status).toBe(400);
+    });
   });
 
   describe('DELETE /items/:id', () => {
@@ -161,6 +174,19 @@ describe('ItemsController', () => {
         .send({ name: 'Test Item 1 Updated', description: 'Description for Test Item 1 Updated' });
       expect(response.status).toBe(400);
     });
+    it('should return 409 if the name is already taken', async () => {
+      const items = await itemsRepository.getItems();
+      const itemId = items[0].id;
+
+      const response = await request(app)
+        .put(`/items/${itemId}`)
+        .send({ name: 'Test Item 2', description: 'Description for Test Item 1 Updated' });
+      expect(response.status).toBe(409);
+    });
   });
+
+
+
+
 
 });

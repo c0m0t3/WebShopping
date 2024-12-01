@@ -3,6 +3,7 @@ import request from 'supertest';
 import { ShoppingListsController } from '../src/controller/shoppingLists.controller';
 import { ShoppingListsRepository } from '../src/database/repository/shoppingLists.repository';
 import { ItemsRepository } from '../src/database/repository/items.repository';
+import { ItemsController } from '../src/controller/items.controller';
 import { TestDatabase } from './helpers/database';
 import { HealthController } from '../src/controller/health.controller';
 
@@ -13,12 +14,14 @@ describe('ShoppingListsController', () => {
   let testDatabase: TestDatabase;
   let shoppingListsRepository: ShoppingListsRepository;
   let itemsRepository: ItemsRepository;
+  let itemController: ItemsController
 
   beforeAll(async () => {
     testDatabase = new TestDatabase();
     await testDatabase.setup();
     shoppingListsRepository = new ShoppingListsRepository(testDatabase.database);
     itemsRepository = new ItemsRepository(testDatabase.database);
+    itemController = new ItemsController(itemsRepository);
   });
 
   afterAll(async () => {
@@ -30,6 +33,8 @@ describe('ShoppingListsController', () => {
     app.use(express.json());
     const shoppingListsController = new ShoppingListsController(shoppingListsRepository, itemsRepository);
     const healthController = new HealthController();
+
+
     app.get('/shoppingLists/:id', shoppingListsController.getShoppingListById.bind(shoppingListsController));
     app.get('/shoppingLists', shoppingListsController.getShoppingLists.bind(shoppingListsController));
     app.post('/shoppingLists', shoppingListsController.createShoppingList.bind(shoppingListsController));
@@ -42,11 +47,16 @@ describe('ShoppingListsController', () => {
     app.get('/shoppingLists/search/search', shoppingListsController.searchShoppingLists.bind(shoppingListsController));
     app.get('/shoppingLists/search/:id', shoppingListsController.searchShoppingListsByItem.bind(shoppingListsController));
     app.get('/health', healthController.getHealthStatus.bind(healthController));
+    app.get('/shoppingLists/:id/store', shoppingListsController.getShoppingListStore.bind(shoppingListsController));
+    app.put('/shoppingLists/:id/store', shoppingListsController.setShoppingListStore.bind(shoppingListsController));
+    app.get('/shoppingLists/store/store', shoppingListsController.getShoppingListsByStore.bind(shoppingListsController));
+    app.get('/products/lookup', shoppingListsController.lookupProductByBarcode.bind(shoppingListsController));
+    app.delete('/items/:id', itemController.deleteItem.bind(itemController));
 
     // Insert test data into the shopping lists table
     await shoppingListsRepository.clear();
-    await shoppingListsRepository.createShoppingList({ name: 'Test Shopping List 1' });
-    await shoppingListsRepository.createShoppingList({ name: 'Test Shopping List 2' });
+    await shoppingListsRepository.createShoppingList({ name: 'Test Shopping List 1', store: 'Store 1' });
+    await shoppingListsRepository.createShoppingList({ name: 'Test Shopping List 2', store: 'Store 2' });
     await itemsRepository.createItems([{ name: 'Test Item 1', description: "Test" }]);
 
     const shoppingLists = await shoppingListsRepository.getShoppingLists();
@@ -73,7 +83,7 @@ describe('ShoppingListsController', () => {
           description: "",
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-          store: "",
+          store: "Store 1",
         },
         {
           id: expect.any(String),
@@ -81,7 +91,7 @@ describe('ShoppingListsController', () => {
           description: "",
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-          store: "",
+          store: "Store 2",
         },
       ]);
     });
@@ -100,7 +110,7 @@ describe('ShoppingListsController', () => {
         description: "",
         createdAt: expect.any(String),
         updatedAt: expect.any(String),
-        store: "",
+        store: "Store 1",
       });
     });
 
@@ -171,6 +181,36 @@ describe('ShoppingListsController', () => {
         });
       expect(response.status).toBe(201);
     });
+
+    it('should return 400 if name field is missing', async () => {
+      const response = await request(app)
+        .post('/shoppingLists')
+        .send({ description: 'Description without name' });
+      expect(response.status).toBe(400);
+    });
+
+    it('should return 400 if name field is empty', async () => {
+      const response = await request(app)
+        .post('/shoppingLists')
+        .send({ name: '', description: 'Empty name' });
+      expect(response.status).toBe(400);
+    });
+
+    it('should return 400 if validation fails', async () => {
+        const response = await request(app)
+          .post('/shoppingLists')
+          .send({ invalidField: 'Invalid Data' });
+        expect(response.status).toBe(400);
+      });
+
+      it('should return 409 if the shopping list already exists', async () => {
+        const response = await request(app)
+          .post('/shoppingLists')
+          .send({ name: 'Test Shopping List 1' });
+        expect(response.status).toBe(409);
+      });
+
+
   });
 
   describe('DELETE /shoppingLists/:id', () => {
@@ -229,6 +269,45 @@ describe('ShoppingListsController', () => {
         .send({ name: 'Test Shopping List 1 Updated' });
       expect(response.status).toBe(400);
     });
+
+
+    it('should return 400 if name field is missing', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+
+      const response = await request(app)
+        .put(`/shoppingLists/${shoppingListId}`)
+        .send({ description: 'Description without name' });
+      expect(response.status).toBe(400);
+    });
+
+    it('should return 400 if name field is empty', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+
+      const response = await request(app)
+        .put(`/shoppingLists/${shoppingListId}`)
+        .send({ name: '', description: 'Empty name' });
+      expect(response.status).toBe(400);
+    });
+
+    it('should return 400 if validation fails', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+
+      const response = await request(app)
+        .put(`/shoppingLists/${shoppingListId}`)
+        .send({ invalidField: 'Invalid Data' });
+      expect(response.status).toBe(400);
+    });
+
+    it('should return 404 if the shopping list is not found', async () => {
+      const response = await request(app)
+        .put('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb')
+        .send({ name: 'Updated Name' });
+      expect(response.status).toBe(404);
+    });
+
   });
 
   describe('POST /shoppingLists/:id/items', () => {
@@ -262,6 +341,16 @@ describe('ShoppingListsController', () => {
         .post(`/shoppingLists/${shoppingListId}/items`)
         .send({ items: [{ itemId: '1bcbecc6-8c96-4263-9579-1abb79b517bb', quantity: 1 }] });
       expect(response.status).toBe(404);
+    });
+
+    it('should return 400 if validation fails', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+
+      const response = await request(app)
+        .post(`/shoppingLists/${shoppingListId}/items`)
+        .send({ invalidField: 'Invalid Data' });
+      expect(response.status).toBe(400);
     });
   });
 
@@ -325,6 +414,16 @@ describe('ShoppingListsController', () => {
         .send({ quantity: 2 });
       expect(response.status).toBe(400);
     });
+
+    it('should return 400 if validation fails', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+
+      const response = await request(app)
+        .post(`/shoppingLists/${shoppingListId}/items`)
+        .send({ invalidField: 'Invalid Data' });
+      expect(response.status).toBe(400);
+    });
   });
 
   describe('GET /shoppingLists/search/search', () => {
@@ -368,4 +467,97 @@ describe('ShoppingListsController', () => {
       expect(response.status).toBe(400);
     });
   });
+
+  describe('GET /shoppingLists/:id/items', () => {
+    it('should return 404 if the shopping list is not found', async () => {
+      const response = await request(app)
+        .get('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb/items');
+      expect(response.status).toBe(404);
+    });
+  });
+
+  describe('GET /shoppingLists/:id/store', () => {
+    it('should return the store associated with a shopping list', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+
+      const response = await request(app).get(`/shoppingLists/${shoppingListId}/store`);
+      expect(response.status).toBe(200);
+    });
+
+    it('should return 404 if the shopping list is not found', async () => {
+      const response = await request(app).get('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb/store');
+      expect(response.status).toBe(404);
+    });
+
+    it('should return 400 if the ID is not a valid UUID', async () => {
+      const response = await request(app).get('/shoppingLists/invalid-uuid/store');
+      expect(response.status).toBe(400);
+    });
+  });
+
+  describe('PUT /shoppingLists/:id/store', () => {
+    it('should set the store for a shopping list', async () => {
+      const shoppingLists = await shoppingListsRepository.getShoppingLists();
+      const shoppingListId = shoppingLists[0].id;
+
+      const response = await request(app)
+        .put(`/shoppingLists/${shoppingListId}/store`)
+        .send({ store: 'Updated Store' });
+      expect(response.status).toBe(200);
+    });
+
+    it('should return 404 if the shopping list is not found', async () => {
+      const response = await request(app)
+        .put('/shoppingLists/1bcbecc6-8c96-4263-9579-1abb79b517bb/store')
+        .send({ store: 'Updated Store' });
+      expect(response.status).toBe(404);
+    });
+
+    it('should return 400 if the ID is not a valid UUID', async () => {
+      const response = await request(app)
+        .put('/shoppingLists/invalid-uuid/store')
+        .send({ store: 'Updated Store' });
+      expect(response.status).toBe(400);
+    });
+  });
+
+  describe('GET /shoppingLists/store/store', () => {
+
+
+    it('should return 400 if store query parameter is missing', async () => {
+      const response = await request(app).get('/shoppingLists/store/store');
+      expect(response.status).toBe(400);
+    });
+
+
+  });
+
+  describe('GET /products/lookup', () => {
+    it('should lookup product by barcode', async () => {
+      const response = await request(app).get('/products/lookup?barcode=123456');
+      expect(response.status).toBe(200);
+    });
+
+    it('should return 400 if barcode query parameter is missing', async () => {
+      const response = await request(app).get('/products/lookup');
+      expect(response.status).toBe(400);
+    });
+
+    it('should return 404 if product is not found', async () => {
+      const response = await request(app).get('/products/lookup?barcode=invalid-barcode');
+      expect(response.status).toBe(404);
+    });
+  });
+  describe('DELETE /items/:id', () => {
+    it('should return 409 if an item is deleted while it is associated with a shopping list', async () => {
+      const items = await itemsRepository.getItems();
+      const itemId = items[0].id;
+
+      const response = await request(app).delete(`/items/${itemId}`);
+      expect(response.status).toBe(409);
+    });
+  });
+
+
 });
