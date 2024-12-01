@@ -123,118 +123,118 @@ npm run db:migrate
 ### Health
 
 - **GET /health**
-    - **Description**: Retrieves the health status of the application.
-    - **Response**: 200 OK, health status.
+    - **Beschreibung**: Ruft den Gesundheitsstatus der Anwendung ab.
+    - **Antwort**: 200 OK, Gesundheitsstatus.
 
-### Items
+### Artikel
 
 - **GET /items/:id**
-    - **Description**: Retrieves a single item by its ID.
-    - **Response**: 200 OK, item object.
-    - **Errors**: 404 Not Found.
+    - **Beschreibung**: Ruft einen einzelnen Artikel anhand seiner ID ab.
+    - **Antwort**: 200 OK, Artikelobjekt.
+    - **Fehler**: 404 Nicht gefunden.
 
 - **GET /items**
-    - **Description**: Retrieves all items.
-    - **Response**: 200 OK, array of items.
+    - **Beschreibung**: Ruft alle Artikel ab.
+    - **Antwort**: 200 OK, Array von Artikeln.
 
 - **POST /items**
-    - **Description**: Creates new items.
-    - **Response**: 201 Created, item object.
-    - **Errors**: 400 Bad Request.
+    - **Beschreibung**: Erstellt neue Artikel.
+    - **Antwort**: 201 Erstellt, Artikelobjekt.
+    - **Fehler**: 400 Ungültige Anfrage.
 
 - **DELETE /items/:id**
-    - **Description**: Deletes an item by its ID.
-    - **Response**: 204 No Content.
-    - **Errors**: 404 Not Found.
+    - **Beschreibung**: Löscht einen Artikel anhand seiner ID.
+    - **Antwort**: 204 Kein Inhalt.
+    - **Fehler**: 404 Nicht gefunden.
 
 - **PUT /items/:id**
-    - **Description**: Updates an item by its ID.
-    - **Response**: 200 OK, item object.
-    - **Errors**: 400 Bad Request, 404 Not Found.
+    - **Beschreibung**: Aktualisiert einen Artikel anhand seiner ID.
+    - **Antwort**: 200 OK, Artikelobjekt.
+    - **Fehler**: 400 Ungültige Anfrage, 404 Nicht gefunden.
 
-### Shopping Lists
+### Einkaufslisten
 
 - **GET /shoppingLists/:id**
-    - **Description**: Retrieves a single shopping list by its ID.
-    - **Response**: 200 OK, shopping list object.
-    - **Errors**: 404 Not Found.
+    - **Beschreibung**: Ruft eine einzelne Einkaufsliste anhand ihrer ID ab.
+    - **Antwort**: 200 OK, Einkaufslistenobjekt.
+    - **Fehler**: 404 Nicht gefunden.
 
 - **GET /shoppingLists**
-    - **Description**: Retrieves all shopping lists.
-    - **Response**: 200 OK, array of shopping lists.
+    - **Beschreibung**: Ruft alle Einkaufslisten ab.
+    - **Antwort**: 200 OK, Array von Einkaufslisten.
 
 - **POST /shoppingLists**
-    - **Description**: Creates a new shopping list.
-    - **Response**: 201 Created, shopping list object.
-    - **Errors**: 400 Bad Request.
+    - **Beschreibung**: Erstellt eine neue Einkaufsliste.
+    - **Antwort**: 201 Erstellt, Einkaufslistenobjekt.
+    - **Fehler**: 400 Ungültige Anfrage.
 
 - **DELETE /shoppingLists/:id**
-    - **Description**: Deletes a shopping list by its ID.
-    - **Response**: 204 No Content.
-    - **Errors**: 404 Not Found.
+    - **Beschreibung**: Löscht eine Einkaufsliste anhand ihrer ID.
+    - **Antwort**: 204 Kein Inhalt.
+    - **Fehler**: 404 Nicht gefunden.
 
 - **PUT /shoppingLists/:id**
-    - **Description**: Updates a shopping list by its ID.
-    - **Response**: 200 OK, shopping list object.
-    - **Errors**: 400 Bad Request, 404 Not Found.
+    - **Beschreibung**: Aktualisiert eine Einkaufsliste anhand ihrer ID.
+    - **Antwort**: 200 OK, Einkaufslistenobjekt.
+    - **Fehler**: 400 Ungültige Anfrage, 404 Nicht gefunden.
 
-### Shopping List Items
+### Einkaufslisten-Artikel
 
 - **POST /shoppingLists/:id/items**
-    - **Description**: Adds items to a shopping list.
-    - **Response**: 201 Created.
-    - **Errors**: 400 Bad Request, 404 Not Found.
+    - **Beschreibung**: Fügt Artikel zu einer Einkaufsliste hinzu.
+    - **Antwort**: 201 Erstellt.
+    - **Fehler**: 400 Ungültige Anfrage, 404 Nicht gefunden.
 
 - **DELETE /shoppingLists/:id/items/:itemId**
-    - **Description**: Removes an item from a shopping list.
-    - **Response**: 204 No Content.
-    - **Errors**: 404 Not Found.
+    - **Beschreibung**: Entfernt einen Artikel aus einer Einkaufsliste.
+    - **Antwort**: 204 Kein Inhalt.
+    - **Fehler**: 404 Nicht gefunden.
 
 - **GET /shoppingLists/:id/items**
-    - **Description**: Retrieves items of a shopping list.
-    - **Response**: 200 OK, array of items.
-    - **Errors**: 404 Not Found.
+    - **Beschreibung**: Ruft Artikel einer Einkaufsliste ab.
+    - **Antwort**: 200 OK, Array von Artikeln.
+    - **Fehler**: 404 Nicht gefunden.
 
 - **PUT /shoppingLists/:id/items/:itemId**
-    - **Description**: Updates an item in a shopping list.
-    - **Response**: 200 OK, item object.
-    - **Errors**: 400 Bad Request, 404 Not Found.
+    - **Beschreibung**: Aktualisiert einen Artikel in einer Einkaufsliste.
+    - **Antwort**: 200 OK, Artikelobjekt.
+    - **Fehler**: 400 Ungültige Anfrage, 404 Nicht gefunden.
 
-### Special Routes
+### Spezielle Routen
 
 - **GET /shoppingLists/search/search**
-    - **Description**: Searches shopping lists by name or description.
-    - **Response**: 200 OK, array of shopping lists.
-    - **Errors**: 400 Bad Request.
+    - **Beschreibung**: Durchsucht Einkaufslisten nach Name oder Beschreibung.
+    - **Antwort**: 200 OK, Array von Einkaufslisten.
+    - **Fehler**: 400 Ungültige Anfrage.
 
 - **GET /shoppingLists/search/:id**
-    - **Description**: Searches shopping lists by item.
-    - **Response**: 200 OK, array of shopping lists.
-    - **Errors**: 404 Not Found.
+    - **Beschreibung**: Durchsucht Einkaufslisten nach Artikel.
+    - **Antwort**: 200 OK, Array von Einkaufslisten.
+    - **Fehler**: 404 Nicht gefunden.
 
-### Store
+### Geschäft
 
 - **GET /shoppingLists/store/store**
-    - **Description**: Retrieves shopping lists by store.
-    - **Response**: 200 OK, array of shopping lists.
-    - **Errors**: 404 Not Found.
+    - **Beschreibung**: Ruft Einkaufslisten mit Suche nach Geschäft ab.
+    - **Antwort**: 200 OK, Array von Einkaufslisten.
+    - **Fehler**: 404 Nicht gefunden.
 
 - **GET /shoppingLists/:id/store**
-    - **Description**: Retrieves the store of a shopping list.
-    - **Response**: 200 OK, store object.
-    - **Errors**: 404 Not Found.
+    - **Beschreibung**: Ruft das Geschäft einer Einkaufsliste ab.
+    - **Antwort**: 200 OK, Geschäftsobjekt.
+    - **Fehler**: 404 Nicht gefunden.
 
 - **PUT /shoppingLists/:id/store**
-    - **Description**: Sets the store of a shopping list.
-    - **Response**: 200 OK, store object.
-    - **Errors**: 400 Bad Request, 404 Not Found.
+    - **Beschreibung**: Setzt das Geschäft einer Einkaufsliste.
+    - **Antwort**: 200 OK, Geschäftsobjekt.
+    - **Fehler**: 400 Ungültige Anfrage, 404 Nicht gefunden.
 
 ### Barcode
 
 - **GET /products/lookup**
-    - **Description**: Retrieves product information by barcode.
-    - **Response**: 200 OK, product information.
-    - **Errors**: 404 Not Found.
+    - **Beschreibung**: Ruft Produktinformationen anhand des Barcodes ab.
+    - **Antwort**: 200 OK, Produktinformationen.
+    - **Fehler**: 404 Nicht gefunden.
 
 ## Tests
 
