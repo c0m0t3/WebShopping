@@ -254,6 +254,7 @@ npm run test:coverage
 ```
 
 - Manuelle Tests: Postman
+- Importieren der Postman-Collection aus der Postman-Colletion-Json
 
 ## Fehlerbehandlung
 
@@ -261,11 +262,6 @@ npm run test:coverage
 - Abfangen von doppelten oder leeren Namen
 - Fehler bei leeren oder inkorrekten Feldern abfangen
 - Korrekte HTTP-Statuscodes verwenden
-
-## Deployment
-
-- Docker: Anleitung zur Nutzung eines Docker-Containers
-- Gitlab: Code-Upload in das h\_da Gitlab-Repository
 
 ## Entwicklerhinweise
 
