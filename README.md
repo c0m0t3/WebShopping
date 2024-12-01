@@ -15,6 +15,27 @@ dazu, die im Modul erlernten Technologien und Konzepte in einem praxisnahen Proj
 
 Node.js, TypeScript, Express, PostgreSQL
 
+## Installation & Setup
+
+1. Voraussetzungen: Node.js, npm/yarn, Datenbank/Docker
+2. Schritte:
+
+```bash
+git clone <repository-url>
+cd <projektordner>
+```
+
+- IDE öffnen
+- .env Datei von .env.example kopieren im backend Ordner
+- ```npm install``` in jeweils den Ordnern "WebShopping", "backend" und "frontend" ausführen
+- ```npm run generate:api``` in frontend Ordner ausführen
+- ```tsc``` in backend Ordner ausführen (falls nicht -> ```npm uninstall typescript``` und dann
+  ```npm install -g typescript```)
+- ```docker-compose up``` in backend Ordner ausführen
+- ```npm run db:generate``` in backend Ordner ausführen
+- ```npm run db:migrate``` in backend Ordner ausführen
+- ```npm start``` im Wurzelverzeichnis ausführen
+
 ## Features
 
 - Einkaufslisten: Erstellen, Bearbeiten, Anzeigen, Löschen
@@ -52,27 +73,6 @@ Node.js, TypeScript, Express, PostgreSQL
 - Barcode anklicken -> Barcode eingeben -> Item hinzufügen
 - Klick auf FWE 24/25 -> Wechsel auf Homepage
 - Klick auf Sonne/Mond -> Wechsel zwischen Dark und Light Mode
-
-## Installation & Setup
-
-1. Voraussetzungen: Node.js, npm/yarn, Datenbank/Docker
-2. Schritte:
-
-```bash
-git clone <repository-url>
-cd <projektordner>
-```
-
-- IDE öffnen
-- .env Datei von .env.example kopieren im backend Ordner
-- ```npm install``` in jeweils den Ordnern "WebShopping", "backend" und "frontend" ausführen
-- ```npm run generate:api``` in frontend Ordner ausführen
-- ```tsc``` in backend Ordner ausführen (falls nicht -> ```npm uninstall typescript``` und dann
-  ```npm install -g typescript```)
-- ```docker-compose up``` in backend Ordner ausführen
-- ```npm run db:generate``` in backend Ordner ausführen
-- ```npm run db:migrate``` in backend Ordner ausführen
-- ```npm start``` im Wurzelverzeichnis ausführen
 
 ## API-Referenz
 

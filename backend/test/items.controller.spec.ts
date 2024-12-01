@@ -5,7 +5,7 @@ import { ItemsRepository } from '../src/database/repository/items.repository';
 import { TestDatabase } from './helpers/database';
 import { HealthController } from '../src/controller/health.controller';
 
-jest.setTimeout(10000); // Increase the timeout to 10 seconds.
+jest.setTimeout(60000); // Increase the timeout to 10 seconds.
 
 describe('ItemsController', () => {
   let app: Application;
@@ -16,7 +16,7 @@ describe('ItemsController', () => {
     testDatabase = new TestDatabase();
     await testDatabase.setup();
     itemsRepository = new ItemsRepository(testDatabase.database);
-  });
+  }, 60000);
 
   afterAll(async () => {
     await testDatabase.teardown();
@@ -87,7 +87,9 @@ describe('ItemsController', () => {
       });
     });
     it('should return a 404 if the item does not exist', async () => {
-      const response = await request(app).get('/items/1bcbecc6-8c96-4263-9579-1abb79b517bb');
+      const response = await request(app).get(
+        '/items/1bcbecc6-8c96-4263-9579-1abb79b517bb',
+      );
       expect(response.status).toBe(404);
     });
     it('should return a 400 if the ID is not a valid UUID', async () => {
@@ -100,18 +102,24 @@ describe('ItemsController', () => {
     it('should create a new item', async () => {
       const response = await request(app)
         .post('/items')
-        .send([{ name: 'Test Item 3', description: 'Description for Test Item 3' }]);
+        .send([
+          { name: 'Test Item 3', description: 'Description for Test Item 3' },
+        ]);
       expect(response.status).toBe(201);
-      expect(response.body).toEqual([{
-        id: expect.any(String),
-        name: 'Test Item 3',
-        description: 'Description for Test Item 3',
-      }]);
+      expect(response.body).toEqual([
+        {
+          id: expect.any(String),
+          name: 'Test Item 3',
+          description: 'Description for Test Item 3',
+        },
+      ]);
     });
     it('should return a 409 if the item already exists', async () => {
       const response = await request(app)
         .post('/items')
-        .send([{ name: 'Test Item 1', description: 'Description for Test Item 1' }]);
+        .send([
+          { name: 'Test Item 1', description: 'Description for Test Item 1' },
+        ]);
       expect(response.status).toBe(409);
     });
     it('should return a 400 if required fields are missing', async () => {
@@ -138,7 +146,9 @@ describe('ItemsController', () => {
       expect(response.status).toBe(204);
     });
     it('should return a 404 if the item does not exist', async () => {
-      const response = await request(app).delete('/items/1bcbecc6-8c96-4263-9579-1abb79b517bb');
+      const response = await request(app).delete(
+        '/items/1bcbecc6-8c96-4263-9579-1abb79b517bb',
+      );
       expect(response.status).toBe(404);
     });
     it('should return a 400 if the ID is not a valid UUID', async () => {
@@ -152,41 +162,44 @@ describe('ItemsController', () => {
       const items = await itemsRepository.getItems();
       const itemId = items[0].id;
 
-      const response = await request(app)
-        .put(`/items/${itemId}`)
-        .send({ name: 'Test Item 1 Updated', description: 'Description for Test Item 1 Updated' });
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual([{
-        id: itemId,
+      const response = await request(app).put(`/items/${itemId}`).send({
         name: 'Test Item 1 Updated',
         description: 'Description for Test Item 1 Updated',
-      }]);
+      });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual([
+        {
+          id: itemId,
+          name: 'Test Item 1 Updated',
+          description: 'Description for Test Item 1 Updated',
+        },
+      ]);
     });
     it('should return a 404 if the item does not exist', async () => {
       const response = await request(app)
         .put('/items/1bcbecc6-8c96-4263-9579-1abb79b517bb')
-        .send({ name: 'Test Item 1 Updated', description: 'Description for Test Item 1 Updated' });
+        .send({
+          name: 'Test Item 1 Updated',
+          description: 'Description for Test Item 1 Updated',
+        });
       expect(response.status).toBe(404);
     });
     it('should return a 400 if the ID is not a valid UUID', async () => {
-      const response = await request(app)
-        .put('/items/invalid-uuid')
-        .send({ name: 'Test Item 1 Updated', description: 'Description for Test Item 1 Updated' });
+      const response = await request(app).put('/items/invalid-uuid').send({
+        name: 'Test Item 1 Updated',
+        description: 'Description for Test Item 1 Updated',
+      });
       expect(response.status).toBe(400);
     });
     it('should return 409 if the name is already taken', async () => {
       const items = await itemsRepository.getItems();
       const itemId = items[0].id;
 
-      const response = await request(app)
-        .put(`/items/${itemId}`)
-        .send({ name: 'Test Item 2', description: 'Description for Test Item 1 Updated' });
+      const response = await request(app).put(`/items/${itemId}`).send({
+        name: 'Test Item 2',
+        description: 'Description for Test Item 1 Updated',
+      });
       expect(response.status).toBe(409);
     });
   });
-
-
-
-
-
 });

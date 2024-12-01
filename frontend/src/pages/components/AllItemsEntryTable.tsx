@@ -58,10 +58,6 @@ export const AllItemsEntryTable: React.FC<AllItemsEntryTableProps> = ({
     }
   };
 
-  const handleAddMoreFields = () => {
-    setSelectedItems([...selectedItems, { name: "", description: "" }]);
-  };
-
   return (
     <>
       <Table>
@@ -142,9 +138,6 @@ export const AllItemsEntryTable: React.FC<AllItemsEntryTableProps> = ({
                 />
               </div>
             ))}
-            <Button onClick={handleAddMoreFields} mt={3}>
-              Add 1 More Item
-            </Button>
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="blue" mr={3} onClick={handleAddItem}>

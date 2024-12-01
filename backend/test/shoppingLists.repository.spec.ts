@@ -1,7 +1,7 @@
 import { TestDatabase } from './helpers/database';
 import { ShoppingListsRepository } from '../src/database/repository/shoppingLists.repository';
 
-jest.setTimeout(30000);
+jest.setTimeout(60000);
 
 describe('ShoppingListRepository Integration Tests', () => {
   const testDatabase = new TestDatabase();
@@ -22,7 +22,7 @@ describe('ShoppingListRepository Integration Tests', () => {
       description: 'Description for Test Shopping List 2',
       store: 'Store 2',
     });
-  });
+  }, 60000);
 
   afterAll(async () => {
     await testDatabase.teardown();

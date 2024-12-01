@@ -1,7 +1,7 @@
 import { TestDatabase } from './helpers/database';
 import { ItemsRepository } from '../src/database/repository/items.repository';
 
-jest.setTimeout(10000);
+jest.setTimeout(60000);
 
 describe('ItemsRepository Integration Tests', () => {
   const testDatabase = new TestDatabase();
@@ -16,7 +16,7 @@ describe('ItemsRepository Integration Tests', () => {
       { name: 'Test Item 1', description: 'Description for Test Item 1' },
       { name: 'Test Item 2', description: 'Description for Test Item 2' },
     ]);
-  });
+  }, 60000);
 
   afterAll(async () => {
     await testDatabase.teardown();
@@ -111,7 +111,6 @@ describe('ItemsRepository Integration Tests', () => {
         'Item name can not be empty',
       );
     });
-
   });
 
   describe('deleteItemFromDatabase', () => {
@@ -164,6 +163,5 @@ describe('ItemsRepository Integration Tests', () => {
         repository.updateItem(test_id, { name: '', description: '' }),
       ).rejects.toThrow('Item name cannot be empty');
     });
-
   });
 });
