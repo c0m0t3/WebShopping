@@ -58,12 +58,20 @@ Node.js, TypeScript, Express, PostgreSQL
 1. Voraussetzungen: Node.js, npm/yarn, Datenbank/Docker
 2. Schritte:
 
+- .env Datei von .env.example kopieren
+
 ```bash
 git clone <repository-url>
 cd <projektordner>
-npm install
-npm start
 ```
+
+- .env Datei von .env.example kopieren
+- ```npm install``` in jeweils den Ordnern "backend" und "frontend" ausführen
+- ```tsc``` in backend Ordner ausführen
+- ```docker-compose up``` in backend Ordner ausführen
+- ```npm run db:generate``` in backend Ordner ausführen
+- ```npm run db:migrate``` in backend Ordner ausführen
+- ```npm start``` im Wurzelverzeichnis ausführen
 
 ## API-Referenz
 
