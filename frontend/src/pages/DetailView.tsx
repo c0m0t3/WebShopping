@@ -42,7 +42,7 @@ const DetailView: React.FC = () => {
       try {
         const response = await client.getItemsForShoppingList(id); // Fetches relation
         if (!response.data || !Array.isArray(response.data)) {
-          throw new Error("Invalid response data");
+          setError("Invalid response data");
         }
         const itemDetails = await Promise.all(
           (response.data as ItemOutShoppingList[]).map(async (item) => {
